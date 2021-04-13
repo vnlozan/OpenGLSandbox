@@ -1,0 +1,12 @@
+[submodule "OpenGLSandbox/vendor/glm"]
+	path = OpenGLSandbox/vendor/glm
+	url = https://github.com/g-truc/glm.git
+[submodule "OpenGLSandbox/vendor/GLFW"]
+	path = OpenGLSandbox/vendor/GLFW
+	url = https://github.com/TheCherno/glfw
+[submodule "OpenGLSandbox/vendor/imgui"]
+	path = OpenGLSandbox/vendor/imgui
+	url = https://github.com/TheCherno/imgui.git
+[submodule "OpenGLSandbox/vendor/glew"]
+	path = OpenGLSandbox/vendor/glew
+	url = https://github.com/omniavinco/glew-cmake.git
