@@ -8,3 +8,6 @@
 	path = OpenGLSandbox/vendor/imgui
 	url = https://github.com/TheCherno/imgui.git
 	branch = docking
+[submodule "OpenGLSandbox/vendor/glew"]
+	path = OpenGLSandbox/vendor/glew
+	url = https://github.com/omniavinco/glew-cmake.git

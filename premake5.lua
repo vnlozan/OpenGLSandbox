@@ -34,25 +34,27 @@ project "OpenGLSandbox"
         "%{prj.name}/src",
         "%{prj.name}/vendor",
         "%{prj.name}/vendor/GLFW/include",
-        "vendor/GLEW/include",
+        -- "vendor/GLEW/include",
     }
 
 -- Linker -> General -> Additional Library Directories
     libdirs
     {
         -- "vendor/GLFW/lib-vc2019",
-        "vendor/GLEW/lib/Release/x64"
+        -- "vendor/GLEW/lib/Release/x64"
     }
 
 -- Linker -> Input -> Additional Dependencies
     links 
     {
-        "glew32s",
+        -- "glew32s",
+        "libglew_static"
         "GLFW",
-        "opengl32",
-        "user32",
-        "gdi32",
-        "Shell32"
+        "ImGui",
+        "opengl32.lib",
+        -- "user32",
+        -- "gdi32",
+        -- "Shell32"
     }
 
     filter "system:windows"
