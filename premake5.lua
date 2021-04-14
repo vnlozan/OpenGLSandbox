@@ -1,5 +1,10 @@
 workspace "OpenGLSandbox"
     architecture "x64"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+    startproject "OpenGLSandbox"
 
     configurations
     {
@@ -8,8 +13,20 @@ workspace "OpenGLSandbox"
         "Dist"
     }
 
+	flags
+	{
+		"MultiProcessorCompile"
+	}
+    
 -- Example : Debug/Windows/x64
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+-- Additional Projects(static libs) to link to
+group "Dependencies"
+	include "OpenGLSandbox/vendor/GLFW"
+    include "OpenGLSandbox/vendor/Glad"
+	include "OpenGLSandbox/vendor/imgui"
+group ""
 
 project "OpenGLSandbox"
     location "OpenGLSandbox"
@@ -25,8 +42,19 @@ project "OpenGLSandbox"
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/res/**.shader",
-        "%{prj.name}/res/**.png"
+        "%{prj.name}/res/**.png",
+        "%{prj.name}/vendor/stb_image/**.h",
+		"%{prj.name}/vendor/stb_image/**.cpp",
+        "%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl"
     }
+
+-- C/C++ -> Preprocessor -> Preprocessor Definitions
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS",
+		"GLFW_INCLUDE_NONE"
+	}
 
 -- C/C++ -> General -> Additional Include Directories
     includedirs
@@ -34,7 +62,9 @@ project "OpenGLSandbox"
         "%{prj.name}/src",
         "%{prj.name}/vendor",
         "%{prj.name}/vendor/GLFW/include",
-        -- "vendor/GLEW/include",
+        "%{prj.name}/vendor/Glad/include",
+        "%{prj.name}/vendor/imgui",
+        "%{prj.name}/vendor/glm"
     }
 
 -- Linker -> General -> Additional Library Directories
@@ -47,39 +77,24 @@ project "OpenGLSandbox"
 -- Linker -> Input -> Additional Dependencies
     links 
     {
-        -- "glew32s",
-        "libglew_static"
         "GLFW",
+        "Glad",
         "ImGui",
-        "opengl32.lib",
-        -- "user32",
-        -- "gdi32",
-        -- "Shell32"
+        "opengl32.lib"
     }
 
     filter "system:windows"
         cppdialect "C++17"
         staticruntime "On"
         systemversion "latest"
-
-        
--- C/C++ -> Preprocessor -> Preprocessor Definitions
-        defines
-        {
-            "GLEW_STATIC",
-            "_DEBUG",
-            "_CONSOLE"
-        }
     
     filter "configurations:Debug"
         -- c/c++ -> code generation -> runtime library : multi-threaded debug dll (/MDd)    
-        buildoptions "/MDd"
+        -- buildoptions "/MDd"
         symbols "On"
     
     filter "configurations:Release"
-        buildoptions "/MD"
         optimize "On"
 
     filter "configurations:Dist"
-        buildoptions "/MD"    
         optimize "On"

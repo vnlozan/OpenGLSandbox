@@ -1,7 +1,11 @@
 #pragma once
-#include <GL/glew.h>
 #include <functional>
 #include "Renderer.h"
+
+#include "imgui.h"
+#include "examples/imgui_impl_opengl3.h"
+#include "examples/imgui_impl_glfw.h"
+
 namespace tests {
 	class Test {
 	public:

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "Renderer.h"
@@ -32,10 +32,12 @@ int main( void ) {
 	glfwMakeContextCurrent( window );
 	glfwSwapInterval( 1 );								// Vertical synchronization
 	glfwSetKeyCallback( window, key_callback );
-	glewExperimental = GL_TRUE;							// Use a modern approach to retrieving function pointers and extensions
-	if ( glewInit() != GLEW_OK ) {
-		std::cout << "Glew Error" << std::endl;
+
+	if ( !gladLoadGLLoader( ( GLADloadproc )glfwGetProcAddress ) ) {
+		std::cout << "Glad Error" << std::endl;
 	}
+
+
 	glViewport( 0, 0, WIDTH, HEIGHT );
 	GLCall( glEnable( GL_BLEND ) );
 	GLCall( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );

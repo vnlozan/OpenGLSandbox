@@ -1,5 +1,5 @@
 #pragma once
-#include <GL/glew.h>
+#include <Glad/glad.h>
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"

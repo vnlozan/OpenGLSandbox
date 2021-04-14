@@ -1,6 +1,5 @@
 #pragma once
 #include "Test.h"
-#include <imgui_1.79/imgui.h>
 
 namespace tests {
 	class TestClearColor : public tests::Test {

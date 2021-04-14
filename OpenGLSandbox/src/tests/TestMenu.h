@@ -3,9 +3,7 @@
 #include <vector>
 #include <string>
 #include "Test.h"
-#include "imgui_1.79/imgui.h"
-#include "imgui_1.79/imgui_impl_glfw.h"
-#include "imgui_1.79/imgui_impl_opengl3.h"
+
 namespace tests {
 	class TestMenu : public Test {
 	public:

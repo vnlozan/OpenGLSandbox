@@ -8,9 +8,6 @@
 #include "Texture.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "imgui_1.79/imgui.h"
-#include "imgui_1.79/imgui_impl_glfw.h"
-#include "imgui_1.79/imgui_impl_opengl3.h"
 #include <memory>
 
 namespace tests {
