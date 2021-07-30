@@ -7,6 +7,7 @@
 #include "Renderer.h"
 #include "tests/Test3DTransform.h"
 #include "tests/TestClearColor.h"
+#include "tests/TestSimpleLight.h"
 #include "tests/TestMenu.h"
 
 
@@ -30,8 +31,13 @@ int main( void ) {
 		return -1;
 	}
 	glfwMakeContextCurrent( window );
-	glfwSwapInterval( 1 );								// Vertical synchronization
+	glfwSwapInterval( 1 ); // Vertical synchronization
 	glfwSetKeyCallback( window, key_callback );
+
+
+	// tell GLFW to capture our mouse
+	//glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+
 
 	if ( !gladLoadGLLoader( ( GLADloadproc )glfwGetProcAddress ) ) {
 		std::cout << "Glad Error" << std::endl;
@@ -44,15 +50,28 @@ int main( void ) {
 	unsigned int vao;
 	GLCall( glGenVertexArrays( 1, &vao ) );
 	GLCall( glBindVertexArray( vao ) );
+
 	Renderer renderer;
-	tests::TestMenu testMenu{ WIDTH, HEIGHT };
-	testMenu.StartImGui( window );
+	tests::TestMenu testMenu{ WIDTH, HEIGHT, window };
+	testMenu.StartImGui();
 	testMenu.RegisterTest<tests::TestClearColor>( "Scene: Clear Color" );
 	testMenu.RegisterTest<tests::Test3DTransform>( "Scene: 3D Transform" );
+	testMenu.RegisterTest<tests::TestSimpleLight>( "Scene: 3D Light" );
+
+	// timing
+	float deltaTime = 0.0f;
+	float lastFrame = 0.0f;
+
 	while (!glfwWindowShouldClose( window )) {
 		glfwPollEvents();
 		renderer.Clear();
-		testMenu.OnUpdate( 0.0f );
+
+		// per-frame time logic
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+		testMenu.OnUpdate( deltaTime );
 		testMenu.OnRender( renderer );
 		testMenu.OnImGuiRender();
 		glfwSwapBuffers( window );

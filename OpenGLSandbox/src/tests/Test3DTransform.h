@@ -13,64 +13,72 @@
 namespace tests {
 	class Test3DTransform : public Test {
 	public:
-		Test3DTransform( GLuint width, GLuint height )
-			: Test( width, height ),
-			model_Translation{ 0.0f, 0.0f, 0.0f }, model_Rotation{ 0.0f, 0.0f, 0.0f }, model_Scale{ 1.0f, 1.0f, 1.0f },
-			model_R{ 1.0f },
-			view_Translation{ 0.0f, 0.0f, 80.0f }, view_Rotation{ 0.0f, 0.0f, 0.0f }, view_Scale{ 0.5f, 0.5f, 0.5f } 
-		{
+		Test3DTransform( GLuint width, GLuint height, GLFWwindow*& window ): Test( width, height ), window{ window } {}
+		~Test3DTransform() {}
+		void OnStart() {
+			model_Translation = glm::vec3( 0.0f, 0.0f, 0.0f );
+			model_Rotation = glm::vec3( 0.0f, 0.0f, 0.0f );
+			model_Scale = glm::vec3( 1.0f, 1.0f, 1.0f );
+			model_R = glm::mat4( 1.0f );
+
+			view_Translation = glm::vec3( 0.0f, 0.0f, 80.0f );
+			view_Rotation = glm::vec3( 0.0f, 0.0f, 0.0f );
+			view_Scale = glm::vec3( 0.5f, 0.5f, 0.5f );
+
+			// 6 cube facets
 			GLfloat vertices[] = {
-				-50.0f, -50.0f, -50.0f,  0.0f, 0.0f,
-				 50.0f, -50.0f, -50.0f,  1.0f, 0.0f,
-				 50.0f,  50.0f, -50.0f,  1.0f, 1.0f,
-				 50.0f,  50.0f, -50.0f,  1.0f, 1.0f,
-				-50.0f,  50.0f, -50.0f,  0.0f, 1.0f,
-				-50.0f, -50.0f, -50.0f,  0.0f, 0.0f,
+				-50.0f, -50.0f, -50.0f, 0.0f, 0.0f,
+				50.0f, -50.0f, -50.0f, 1.0f, 0.0f,
+				50.0f, 50.0f, -50.0f, 1.0f, 1.0f,	// triangle 1 vertices + texture coordinates (uv)
+				50.0f, 50.0f, -50.0f, 1.0f, 1.0f,
+				-50.0f, 50.0f, -50.0f, 0.0f, 1.0f,
+				-50.0f, -50.0f, -50.0f, 0.0f, 0.0f,	// triangle 2 vertices + texture coordinates (uv)
 
-				-50.0f, -50.0f,  50.0f,  0.0f, 0.0f,
-				 50.0f, -50.0f,  50.0f,  1.0f, 0.0f,
-				 50.0f,  50.0f,  50.0f,  1.0f, 1.0f,
-				 50.0f,  50.0f,  50.0f,  1.0f, 1.0f,
-				-50.0f,  50.0f,  50.0f,  0.0f, 1.0f,
-				-50.0f, -50.0f,  50.0f,  0.0f, 0.0f,
+				-50.0f, -50.0f, 50.0f, 0.0f, 0.0f,
+				50.0f, -50.0f, 50.0f, 1.0f, 0.0f,
+				50.0f, 50.0f, 50.0f, 1.0f, 1.0f,
+				50.0f, 50.0f, 50.0f, 1.0f, 1.0f,
+				-50.0f, 50.0f, 50.0f, 0.0f, 1.0f,
+				-50.0f, -50.0f, 50.0f, 0.0f, 0.0f,
 
-				-50.0f,  50.0f,  50.0f,  1.0f, 0.0f,
-				-50.0f,  50.0f, -50.0f,  1.0f, 1.0f,
-				-50.0f, -50.0f, -50.0f,  0.0f, 1.0f,
-				-50.0f, -50.0f, -50.0f,  0.0f, 1.0f,
-				-50.0f, -50.0f,  50.0f,  0.0f, 0.0f,
-				-50.0f,  50.0f,  50.0f,  1.0f, 0.0f,
+				-50.0f, 50.0f, 50.0f, 1.0f, 0.0f,
+				-50.0f, 50.0f, -50.0f, 1.0f, 1.0f,
+				-50.0f, -50.0f, -50.0f, 0.0f, 1.0f,
+				-50.0f, -50.0f, -50.0f, 0.0f, 1.0f,
+				-50.0f, -50.0f, 50.0f, 0.0f, 0.0f,
+				-50.0f, 50.0f, 50.0f, 1.0f, 0.0f,
 
-				 50.0f,  50.0f,  50.0f,  1.0f, 0.0f,
-				 50.0f,  50.0f, -50.0f,  1.0f, 1.0f,
-				 50.0f, -50.0f, -50.0f,  0.0f, 1.0f,
-				 50.0f, -50.0f, -50.0f,  0.0f, 1.0f,
-				 50.0f, -50.0f,  50.0f,  0.0f, 0.0f,
-				 50.0f,  50.0f,  50.0f,  1.0f, 0.0f,
+				50.0f, 50.0f, 50.0f, 1.0f, 0.0f,
+				50.0f, 50.0f, -50.0f, 1.0f, 1.0f,
+				50.0f, -50.0f, -50.0f, 0.0f, 1.0f,
+				50.0f, -50.0f, -50.0f, 0.0f, 1.0f,
+				50.0f, -50.0f, 50.0f, 0.0f, 0.0f,
+				50.0f, 50.0f, 50.0f, 1.0f, 0.0f,
 
-				-50.0f, -50.0f, -50.0f,  0.0f, 1.0f,
-				 50.0f, -50.0f, -50.0f,  1.0f, 1.0f,
-				 50.0f, -50.0f,  50.0f,  1.0f, 0.0f,
-				 50.0f, -50.0f,  50.0f,  1.0f, 0.0f,
-				-50.0f, -50.0f,  50.0f,  0.0f, 0.0f,
-				-50.0f, -50.0f, -50.0f,  0.0f, 1.0f,
+				-50.0f, -50.0f, -50.0f, 0.0f, 1.0f,
+				50.0f, -50.0f, -50.0f, 1.0f, 1.0f,
+				50.0f, -50.0f, 50.0f, 1.0f, 0.0f,
+				50.0f, -50.0f, 50.0f, 1.0f, 0.0f,
+				-50.0f, -50.0f, 50.0f, 0.0f, 0.0f,
+				-50.0f, -50.0f, -50.0f, 0.0f, 1.0f,
 
-				-50.0f,  50.0f, -50.0f,  0.0f, 1.0f,
-				 50.0f,  50.0f, -50.0f,  1.0f, 1.0f,
-				 50.0f,  50.0f,  50.0f,  1.0f, 0.0f,
-				 50.0f,  50.0f,  50.0f,  1.0f, 0.0f,
-				-50.0f,  50.0f,  50.0f,  0.0f, 0.0f,
-				-50.0f,  50.0f, -50.0f,  0.0f, 1.0f
+				-50.0f, 50.0f, -50.0f, 0.0f, 1.0f,
+				50.0f, 50.0f, -50.0f, 1.0f, 1.0f,
+				50.0f, 50.0f, 50.0f, 1.0f, 0.0f,
+				50.0f, 50.0f, 50.0f, 1.0f, 0.0f,
+				-50.0f, 50.0f, 50.0f, 0.0f, 0.0f,
+				-50.0f, 50.0f, -50.0f, 0.0f, 1.0f
 			};
-			
-			m_VAO = std::make_unique<VertexArray>();
+
 			m_VBO = std::make_unique<VertexBuffer>( vertices, 5 * 36 * sizeof( float ) );
 
 			VertexBufferLayout layout;
 			layout.Push<float>( 3 );
 			layout.Push<float>( 2 );
-			
+
+			m_VAO = std::make_unique<VertexArray>();
 			m_VAO->AddBuffer( *m_VBO, layout );
+
 			m_Shader = std::make_unique<Shader>( "res/shaders/Basic_2.shader" );
 			m_Shader->Bind();
 			m_Texture = std::make_unique<Texture>( "res/textures/bricks.jpg" );
@@ -81,7 +89,6 @@ namespace tests {
 			m_Shader->Unbind();
 			m_VBO->Unbind();
 		}
-		~Test3DTransform() {}
 		void OnUpdate( float deltaTime ) override {
 		}
 		void OnRender( Renderer& renderer ) override {
@@ -134,5 +141,7 @@ namespace tests {
 		glm::vec3 view_Translation;
 		glm::vec3 view_Rotation;
 		glm::vec3 view_Scale;
+
+		GLFWwindow* window;
 	};
 }

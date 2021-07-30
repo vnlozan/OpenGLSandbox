@@ -4,7 +4,7 @@
 namespace tests {
 	class TestClearColor : public tests::Test {
 	public:
-		TestClearColor( GLuint width, GLuint height ) : Test{ width, height }, m_Color { 0.2f, 0.3f, 0.8f, 1.0f } {}
+		TestClearColor( GLuint width, GLuint height, GLFWwindow*& window ): Test{ width, height }, m_Color{ 0.2f, 0.3f, 0.8f, 1.0f }, window{ window } {}
 		~TestClearColor() {}
 		void OnUpdate( float deltatime ) override {}
 		void OnRender( Renderer& renderer ) override {
@@ -21,5 +21,6 @@ namespace tests {
 		}
 	private:
 		float m_Color[4];
+		GLFWwindow* window;
 	};
 }

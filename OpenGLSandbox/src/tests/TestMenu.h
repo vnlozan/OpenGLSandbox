@@ -7,16 +7,20 @@
 namespace tests {
 	class TestMenu : public Test {
 	public:
-		TestMenu( GLuint width, GLuint height ) : Test{ width, height }, m_CurrentTest{ nullptr } {}
+		TestMenu( GLuint width, GLuint height, GLFWwindow*& window ): Test{ width, height }, m_CurrentTest{ nullptr }, window{ window } {}
 		~TestMenu() {
 			delete m_CurrentTest;
 		}
 		template<typename T>
 		void RegisterTest( const std::string& name ) {
 			std::cout << "Registering test " << name << std::endl;
-			m_Tests.push_back( std::make_pair( name, [ this ]() { return new T( m_Width, m_Height ); } ) );
+			m_Tests.push_back( std::make_pair( name, [ this ]() {
+				T* t = new T( m_Width, m_Height, window );
+				t->OnStart();
+				return t; 
+			} ) );
 		}
-		void StartImGui( GLFWwindow*& window ) {
+		void StartImGui() {
 			IMGUI_CHECKVERSION();
 			ImGui::CreateContext();
 			ImGuiIO& io = ImGui::GetIO(); ( void )io;
@@ -69,5 +73,6 @@ namespace tests {
 	private:
 		Test* m_CurrentTest;
 		std::vector < std::pair<std::string, std::function<Test* ( )>>> m_Tests;
+		GLFWwindow* window;
 	};
 }
