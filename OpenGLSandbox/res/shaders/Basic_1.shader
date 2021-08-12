@@ -18,14 +18,10 @@ void main() {
 #shader fragment
 #version 330 core
 
-out vec4 FragColor;
-
 in vec2 v_TexCoord;
 
 uniform sampler2D u_Texture;
-uniform vec3 u_LightColor;
 
 void main() {
-    FragColor = texture( u_Texture, v_TexCoord );
-    FragColor.rgb *= u_LightColor;
+    gl_FragColor = texture( u_Texture, v_TexCoord );
 }
