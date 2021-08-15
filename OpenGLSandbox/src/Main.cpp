@@ -5,6 +5,7 @@
 #include "scenes/PhongSpotLightScene.h"
 #include "scenes/PhongMultipleLightScene.h"
 
+
 int main( void ) {
 	Application app{ 1920, 1080, "OpenGL Sandbox" };
 	app.Init();
