@@ -21,11 +21,15 @@ void Renderer::DrawElements( const VertexArray& va, const IndexBuffer& ib, const
 	shader.Bind();
 	va.Bind();
 	ib.Bind();
+	// TYPE, ELEMENTS_COUNT, ELEMENTS_COUNT, ELEMENT_TYPE
+	// The last argument allows us to specify an offset in the EBO
+	// (or pass in an index array, but that is when you're not using element buffer objects), but we're just going to leave this at 0.
 	GLCall( glDrawElements( GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr ) );
 }
 
 void Renderer::DrawArrays( const VertexArray& va, const unsigned int bufferCount, const Shader& shader ) const {
 	shader.Bind();
 	va.Bind();
+	// TYPE, START_INDEX, INDEX_COUNT from ARRAY
 	GLCall( glDrawArrays( GL_TRIANGLES, 0, bufferCount ) );
 }

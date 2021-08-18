@@ -3,21 +3,21 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "scenes/Scene.h"
-
+#include "scenes/Scene.hpp"
+#include <string>
 #include "VertexArray.h"
 #include "VertexBuffer.h"
-#include "VertexBufferLayout.h"
+#include "VertexBufferLayout.hpp"
 #include "Shader.h"
 #include "Texture.h"
 
 namespace Scenes {
 
-	class PhongPointLightScene: public Scene {
+	class PhongMultipleLightScene: public Scene {
 	public:
-		PhongPointLightScene( GLuint width, GLuint height, GLFWwindow* window )
+		PhongMultipleLightScene( GLuint width, GLuint height, GLFWwindow* window )
 			: Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
-		virtual ~PhongPointLightScene() override {}
+		virtual ~PhongMultipleLightScene() override {}
 		virtual void OnStart() override {
 			Scene::OnStart();
 
@@ -90,6 +90,12 @@ namespace Scenes {
 			cubePositions.emplace_back( glm::vec3( 1.5f, 0.2f, -1.5f ) );
 			cubePositions.emplace_back( glm::vec3( -1.3f, 1.0f, -1.5f ) );
 
+			pointLightPositions.emplace_back( glm::vec3( 0.7f, 0.2f, 2.0f ) );
+			pointLightPositions.emplace_back( glm::vec3( 2.3f, -3.3f, -4.0f ) );
+			pointLightPositions.emplace_back( glm::vec3( -4.0f, 2.0f, -12.0f ) );
+			pointLightPositions.emplace_back( glm::vec3( 0.0f, 0.0f, -3.0f ) );
+
+
 			// Configure VBO
 			m_VBO = std::make_unique<VertexBuffer>( vertices, sizeof( vertices ) );
 			VertexBufferLayout layout; // position x3, normal x3, uv x2
@@ -103,11 +109,10 @@ namespace Scenes {
 			m_Texture->Bind( 0 );
 			m_TextureSpec = std::make_unique<Texture>( "res/textures/container_specular.png" );
 			m_TextureSpec->Bind( 1 );
-			m_Shader = std::make_unique<Shader>( "res/shaders/PhongPointLight.shader" );
+			m_Shader = std::make_unique<Shader>( "res/shaders/PhongMultipleLight.shader" );
 			m_Shader->Bind();
 			m_Shader->SetUniform1i( "u_Material.diffuse", 0 );
 			m_Shader->SetUniform1i( "u_Material.specular", 1 );
-			m_Shader->SetUniform3f( "u_Light.position", m_LightPos.r, m_LightPos.g, m_LightPos.b );
 			m_VAO->Unbind();
 			m_Shader->Unbind();
 			// Configure lightning source
@@ -115,7 +120,7 @@ namespace Scenes {
 			m_VAO_lightSource->AddBuffer( *m_VBO, layout );
 			m_Shader_lightSource = std::make_unique<Shader>( "res/shaders/Basic.shader" );
 			m_Shader_lightSource->Bind();
-			m_Shader_lightSource->SetUniform3f( "u_Color", 1.0f, 1.0f, 1.0f );
+			m_Shader_lightSource->SetUniform3f( "u_Color", 1.0f, 0.0f, 0.0f );
 			m_VAO_lightSource->Unbind();
 			m_Shader_lightSource->Unbind();
 			//
@@ -135,20 +140,39 @@ namespace Scenes {
 			m_Texture->Bind( 0 );
 			m_TextureSpec->Bind( 1 );
 
-			m_Shader->SetUniform3f( "u_Light.ambient", 0.2f, 0.2f, 0.2f );
-			m_Shader->SetUniform3f( "u_Light.diffuse", 0.5f, 0.5f, 0.5f );
-			m_Shader->SetUniform3f( "u_Light.specular", 1.0f, 1.0f, 1.0f );
-			m_Shader->SetUniform1f( "u_Light.constant", 1.0f );
-			m_Shader->SetUniform1f( "u_Light.linear", 0.35f );
-			m_Shader->SetUniform1f( "u_Light.quadratic", 0.44f );
-
-
+			m_Shader->SetUniform3f( "u_ViewPos", m_Camera.Position );
 			m_Shader->SetUniform1f( "u_Material.shininess", 32.0f );
-			m_Shader->SetUniform3f( "u_ViewPos", m_Camera.Position.r, m_Camera.Position.g, m_Camera.Position.b );
+			// Direction light
+			m_Shader->SetUniform3f( "u_DirectionLight.direction", -0.2f, -1.0f, -0.3f );
+			m_Shader->SetUniform3f( "u_DirectionLight.ambient", 0.0f, 0.05f, 0.0f );
+			m_Shader->SetUniform3f( "u_DirectionLight.diffuse", 0.0f, 1.0f, 0.0f );
+			m_Shader->SetUniform3f( "u_DirectionLight.specular", 0.0f, 0.5f, 0.0f );
+			// Point light
+			for( size_t i = 0; i < pointLightPositions.size(); i++ ) {
+				std::string tmp = std::to_string( i );
+				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].position", pointLightPositions[i] );
+				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].ambient", 0.02f, 0.0f, 0.0f );
+				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].diffuse", 1.0f, 0.0f, 0.0f );
+				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].specular", 0.5f, 0.0f, 0.0f );
+				m_Shader->SetUniform1f( "u_PointLights[" + tmp + "].constant", 1.0f );
+				m_Shader->SetUniform1f( "u_PointLights[" + tmp + "].linear", 0.09 );
+				m_Shader->SetUniform1f( "u_PointLights[" + tmp + "].quadratic", 0.032 );
+			}
+			// Spot light
+			m_Shader->SetUniform3f( "u_SpotLight.position", m_Camera.Position );
+			m_Shader->SetUniform3f( "u_SpotLight.direction", m_Camera.Front );
+			m_Shader->SetUniform3f( "u_SpotLight.ambient", 0.0f, 0.0f, 0.0f );
+			m_Shader->SetUniform3f( "u_SpotLight.diffuse", 1.0f, 1.0f, 1.0f );
+			m_Shader->SetUniform3f( "u_SpotLight.specular", 1.0f, 1.0f, 1.0f );
+			m_Shader->SetUniform1f( "u_SpotLight.constant", 1.0f );
+			m_Shader->SetUniform1f( "u_SpotLight.linear", 0.09 );
+			m_Shader->SetUniform1f( "u_SpotLight.quadratic", 0.032 );
+			m_Shader->SetUniform1f( "u_SpotLight.cutOff", glm::cos( glm::radians( 12.5f ) ) );
+			m_Shader->SetUniform1f( "u_SpotLight.outerCutOff", glm::cos( glm::radians( 15.0f ) ) );
+
 
 			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
 			glm::mat4 view = m_Camera.GetViewMatrix();
-
 			for( size_t i = 0; i < cubePositions.size(); i++ ) {
 
 				glm::mat4 model = glm::mat4( 1.0f );
@@ -163,13 +187,16 @@ namespace Scenes {
 				render.DrawArrays( *m_VAO, 36, *m_Shader );
 			}
 
-			glm::mat4 model = glm::mat4( 1.0f );
-			model = glm::translate( model, m_LightPos );
-			model = glm::scale( model, glm::vec3( 0.2f ) ); // a smaller cube
-			glm::mat4 mvp = projection * view * model; // THE RIGHT WAY pvm
 			m_Shader_lightSource->Bind();
-			m_Shader_lightSource->SetUniformMat4f( "u_MVP", mvp );
-			render.DrawArrays( *m_VAO_lightSource, 36, *m_Shader_lightSource );
+			for( size_t i = 0; i < pointLightPositions.size(); i++ ) {
+				glm::mat4 model = glm::mat4( 1.0f );
+				model = glm::translate( model, pointLightPositions[i] );
+				model = glm::scale( model, glm::vec3( 0.2f ) ); // Make it a smaller cube
+				glm::mat4 mvp = projection * view * model; // THE RIGHT WAY pvm
+				m_Shader_lightSource->SetUniformMat4f( "u_MVP", mvp );
+				glDrawArrays( GL_TRIANGLES, 0, 36 );
+				render.DrawArrays( *m_VAO_lightSource, 36, *m_Shader_lightSource );
+			}
 		}
 	private:
 		std::unique_ptr<VertexArray> m_VAO;
@@ -180,6 +207,8 @@ namespace Scenes {
 		std::unique_ptr<VertexArray> m_VAO_lightSource;
 		std::unique_ptr<Shader> m_Shader_lightSource;
 		glm::vec3 m_LightPos;
+
 		std::vector<glm::vec3> cubePositions;
+		std::vector<glm::vec3> pointLightPositions;
 	};
 }

@@ -3,11 +3,11 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
-#include "scenes/Scene.h"
+#include "scenes/Scene.hpp"
 
 #include "VertexArray.h"
 #include "VertexBuffer.h"
-#include "VertexBufferLayout.h"
+#include "VertexBufferLayout.hpp"
 #include "Shader.h"
 #include "Texture.h"
 

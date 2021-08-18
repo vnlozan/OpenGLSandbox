@@ -1,9 +1,9 @@
-#include "Application.h"
+#include "Application.hpp"
 
-#include "scenes/PhongDirectionLightScene.h"
-#include "scenes/PhongPointLightScene.h"
-#include "scenes/PhongSpotLightScene.h"
-#include "scenes/PhongMultipleLightScene.h"
+#include "scenes/PhongDirectionLightScene.hpp"
+#include "scenes/PhongPointLightScene.hpp"
+#include "scenes/PhongSpotLightScene.hpp"
+#include "scenes/PhongMultipleLightScene.hpp"
 
 
 int main( void ) {

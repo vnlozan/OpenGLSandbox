@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "scenes/Scene.h"
-#include "scenes/MenuScene.h"
+#include "scenes/Scene.hpp"
+#include "scenes/MenuScene.hpp"
 
 class Application {
 public:

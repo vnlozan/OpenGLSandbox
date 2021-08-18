@@ -14,4 +14,3 @@ public:
 	void Unbind() const;
 	void AddBuffer( const VertexBuffer&, const VertexBufferLayout& );
 };
-
