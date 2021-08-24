@@ -10,7 +10,7 @@ Texture::Texture( const char* path, Texture::TYPE type )
 	stbi_set_flip_vertically_on_load( true );
 
 	GLCall( glGenTextures( 1, &m_RendererID ) );
-		
+	
 	m_LocalBuffer = stbi_load( path, &m_Width, &m_Height, &m_BPP, 0 );
 	if( m_LocalBuffer ) {
 		GLenum format;
@@ -36,13 +36,55 @@ Texture::Texture( const char* path, Texture::TYPE type )
 		stbi_image_free( m_LocalBuffer );
 	}
 }
-Texture::~Texture() {
-	GLCall( glDeleteTextures( 1, &m_RendererID ) );
+Texture::Texture( const Texture& t )
+	: type{ t.type }, m_FilePath{ t.m_FilePath }, m_RendererID{ t.m_RendererID }, m_Width{ t.m_Width }, m_Height{ t.m_Height }, m_BPP{ t.m_BPP } {
+	std::cout << "COPY CONSTRUCTOR" << std::endl;
+	m_LocalBuffer = t.m_LocalBuffer;
 }
-void Texture::Bind( unsigned int slot /* = 0 */) const {
+Texture::Texture( Texture&& t ) noexcept
+	: type{ t.type }, m_FilePath{ t.m_FilePath }, m_RendererID{ t.m_RendererID }, m_Width{ t.m_Width }, m_Height{ t.m_Height }, m_BPP{ t.m_BPP } {
+	std::cout << "MOVE CONSTRUCTOR" << std::endl;
+	m_LocalBuffer = t.m_LocalBuffer;
+	t.m_LocalBuffer = nullptr;
+}
+Texture::~Texture() {
+	std::cout << "Texture deleted" << std::endl;
+	//GLCall( glDeleteTextures( 1, &m_RendererID ) );
+}
+void Texture::ActivateTexture( unsigned int slot /* = 0 */ ) const {
 	GLCall( glActiveTexture( GL_TEXTURE0 + slot ) );
+}
+void Texture::Bind() const {
 	GLCall( glBindTexture( GL_TEXTURE_2D, m_RendererID ) );
 }
 void Texture::Unbind() const {
 	GLCall( glBindTexture( GL_TEXTURE_2D, 0 ) );
+}
+
+Texture& Texture::operator=( const Texture& rhs ) {
+	if( this == &rhs ) {
+		return *this;
+	}
+	type = rhs.type;
+	m_FilePath = rhs.m_FilePath;
+	m_RendererID = rhs.m_RendererID;
+	m_Width = rhs.m_Width;
+	m_Height = rhs.m_Height;
+	m_BPP = rhs.m_BPP;
+	*m_LocalBuffer = *rhs.m_LocalBuffer;
+	return *this;
+}
+Texture& Texture::operator=( Texture&& rhs ) noexcept {
+	if( this == &rhs ) {
+		return *this;
+	}
+	type = rhs.type;
+	m_FilePath = rhs.m_FilePath;
+	m_RendererID = rhs.m_RendererID;
+	m_Width = rhs.m_Width;
+	m_Height = rhs.m_Height;
+	m_BPP = rhs.m_BPP;
+	*m_LocalBuffer = *rhs.m_LocalBuffer;
+	rhs.m_LocalBuffer = nullptr;
+	return *this;
 }

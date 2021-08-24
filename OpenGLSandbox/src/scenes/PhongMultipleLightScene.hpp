@@ -105,10 +105,10 @@ namespace Scenes {
 			// Configure lightning object
 			m_VAO = std::make_unique<VertexArray>();
 			m_VAO->AddBuffer( *m_VBO, layout );
+
 			m_Texture = std::make_unique<Texture>( "res/textures/container_diffuse.png" );
-			m_Texture->Bind( 0 );
 			m_TextureSpec = std::make_unique<Texture>( "res/textures/container_specular.png" );
-			m_TextureSpec->Bind( 1 );
+
 			m_Shader = std::make_unique<Shader>( "res/shaders/PhongMultipleLight.shader" );
 			m_Shader->Bind();
 			m_Shader->SetUniform1i( "u_Material.diffuse", 0 );
@@ -137,8 +137,10 @@ namespace Scenes {
 		virtual void OnRender( Renderer& render ) override {
 			m_Shader->Bind();
 
-			m_Texture->Bind( 0 );
-			m_TextureSpec->Bind( 1 );
+			m_Texture->ActivateTexture( 0 );
+			m_Texture->Bind();
+			m_TextureSpec->ActivateTexture( 1 );
+			m_TextureSpec->Bind();
 
 			m_Shader->SetUniform3f( "u_ViewPos", m_Camera.Position );
 			m_Shader->SetUniform1f( "u_Material.shininess", 32.0f );

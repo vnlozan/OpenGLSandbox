@@ -4,7 +4,7 @@ private:
 	unsigned int m_RendererId;
 	unsigned int m_Count;
 public:
-	IndexBuffer( const void* data, unsigned int count );
+	IndexBuffer( const void* data, unsigned int size, unsigned int count );
 	~IndexBuffer();
 	void Bind() const;
 	void Unbind() const;

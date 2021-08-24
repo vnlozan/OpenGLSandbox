@@ -10,6 +10,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/DefaultLogger.hpp>
+#include <assimp/LogStream.hpp>
 
 #include "Shader.h"
 #include "Texture.h"
@@ -18,6 +20,7 @@
 
 class Model {
 public:
+    Model();
     Model( std::string const& path, bool gamma = false );
     void Draw( Renderer& render, Shader& shader );
 private:
@@ -25,6 +28,7 @@ private:
     void processNode( aiNode* node, const aiScene* scene );
     Mesh processMesh( aiMesh* mesh, const aiScene* scene );
     std::vector<Texture> loadMaterialTextures( aiMaterial* mat, aiTextureType aiType, Texture::TYPE type );
+    void loadMaterialTextures( aiMaterial* mat, aiTextureType aiType, Texture::TYPE type, std::vector<Texture>& outTextures );
 public:
     std::vector<Texture>    m_TexturesLoaded;
     std::vector<Mesh>       m_Meshes;

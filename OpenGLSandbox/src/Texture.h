@@ -12,10 +12,16 @@ public:
 	};
 	
 	Texture( const char* path, Texture::TYPE type = Texture::TYPE::DIFFUSE );
+	Texture( const Texture& texture );
+	Texture( Texture&& texture ) noexcept;
 	~Texture();
 
-	void Bind( unsigned int slot = 0 ) const;
+	void ActivateTexture( unsigned int slot = 0 ) const;
+	void Bind() const;
 	void Unbind() const;
+
+	Texture& operator=( const Texture& rhs );
+	Texture& operator=( Texture&& rhs ) noexcept;
 
 	inline int	GetWidth() const { return m_Width; }
 	inline int	GetHeight()	const { return m_Height; }

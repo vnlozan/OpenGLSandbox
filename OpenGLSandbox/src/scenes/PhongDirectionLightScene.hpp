@@ -88,14 +88,8 @@ namespace Scenes {
 			m_VAO->AddBuffer( *m_VBO, layout );
 
 			m_Texture = std::make_unique<Texture>( "res/textures/container_diffuse.png" );
-			m_Texture->Bind( 0 );
-
 			m_TextureSpec = std::make_unique<Texture>( "res/textures/container_specular.png" );
-			m_TextureSpec->Bind( 1 );
-
 			m_TextureEmissive = std::make_unique<Texture>( "res/textures/container_emission.jpg" );
-			m_TextureEmissive->Bind( 2 );
-
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/PhongDirectLight.shader" );
 			m_Shader->Bind();
@@ -127,9 +121,13 @@ namespace Scenes {
 		virtual void OnRender( Renderer& render ) override {
 			m_Shader->Bind();
 
-			m_Texture->Bind( 0 );
-			m_TextureSpec->Bind( 1 );
-			m_TextureEmissive->Bind( 2 );
+			m_Texture->ActivateTexture( 0 );
+			m_Texture->Bind();
+			m_TextureSpec->ActivateTexture( 1 );
+			m_TextureSpec->Bind();
+			m_TextureEmissive->ActivateTexture( 2 );
+			m_TextureEmissive->Bind();
+
 			GLCall( glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT ) );
 			GLCall( glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT ) );
 
