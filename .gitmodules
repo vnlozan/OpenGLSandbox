@@ -7,6 +7,3 @@
 [submodule "OpenGLSandbox/vendor/imgui"]
 	path = OpenGLSandbox/vendor/imgui
 	url = https://github.com/TheCherno/imgui.git
-[submodule "OpenGLSandbox/vendor/ASSIMP"]
-	path = OpenGLSandbox/vendor/ASSIMP
-	url = https://github.com/vnlozan/assimp.git
