@@ -4,7 +4,7 @@
 
 Model::Model( std::string const& path, bool gamma ) : m_GammaCorrection{ gamma } {
     m_TexturesLoaded.reserve( 5 );
-    Assimp::Logger::LogSeverity severity = Assimp::Logger::NORMAL;
+    //Assimp::Logger::LogSeverity severity = Assimp::Logger::NORMAL;
     //Assimp::Logger::LogSeverity severity = Assimp::Logger::VERBOSE;
     //Assimp::DefaultLogger::create( "ASSIMP.logs.txt", severity, aiDefaultLogStream_STDOUT );
     //Assimp::DefaultLogger::get()->info( "this is my info-call" );

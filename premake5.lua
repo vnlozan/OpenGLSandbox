@@ -24,6 +24,8 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Additional Projects(static libs) to link to
 group "Dependencies"
 	include "OpenGLSandbox/vendor/GLFW"
+    include "OpenGLSandbox/vendor/ASSIMP/IrrXML"
+    include "OpenGLSandbox/vendor/ASSIMP/zlibstatic"
     include "OpenGLSandbox/vendor/ASSIMP"
     include "OpenGLSandbox/vendor/Glad"
 	include "OpenGLSandbox/vendor/imgui"
@@ -41,9 +43,13 @@ project "OpenGLSandbox"
     files
     {
         "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.hpp",
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/res/**.shader",
         "%{prj.name}/res/**.png",
+        "%{prj.name}/res/**.obj",
+        "%{prj.name}/res/**.mtl",
+        "%{prj.name}/res/**.jpg",
         "%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
         "%{prj.name}/vendor/glm/glm/**.hpp",
@@ -80,6 +86,8 @@ project "OpenGLSandbox"
     links 
     {
         "GLFW",
+        "zlibstatic",
+        "IrrXML",
         "ASSIMP",
         "Glad",
         "ImGui",
