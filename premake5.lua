@@ -42,6 +42,7 @@ project "OpenGLSandbox"
 -- All file extensions used in project
     files
     {
+        "todo.txt",
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.hpp",
         "%{prj.name}/src/**.cpp",

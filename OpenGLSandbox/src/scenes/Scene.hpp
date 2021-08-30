@@ -124,6 +124,7 @@ namespace Scenes {
 		void SetMenuBackFunction( std::function<void( void )> menuBackFunc ) {
 			this->m_menuBackFunc = menuBackFunc;
 		}
+	protected:
 	private:
 	public:
 		bool m_ControlsEnabled = false;

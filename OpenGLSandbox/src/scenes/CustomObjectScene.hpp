@@ -27,7 +27,6 @@ namespace Scenes {
 				}
 			};	
 			m_Model = std::make_unique<Model>( "res/models/backpack/backpack.obj" );
-			//m_Model = std::make_unique<Model>( "res/models/tree/tree.obj" );
 			m_Shader = std::make_unique<Shader>( "res/shaders/BasicModel.shader" );
 		}
 		virtual void OnImGuiRender() override {
@@ -51,6 +50,13 @@ namespace Scenes {
 			m_Shader->SetUniformMat4f( "u_MVP", mvp );
 
 			m_Model->Draw( render, *m_Shader );
+		}
+		void SetWireframeMode( bool enable = true ) {
+			if( enable ) {
+				glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+				return;
+			}
+			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		}
 	private:
 		std::unique_ptr<Model> m_Model;

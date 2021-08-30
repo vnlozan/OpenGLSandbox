@@ -1,0 +1,6 @@
+1. CustomObjectScene:
+    add flashpoint light
+    add specular map using
+2. Improve/optimise textruresLoaded logics
+    mb store map<string,void*> texturesLoaded
+3. Add info about how many vertices,indexes, textures used;
