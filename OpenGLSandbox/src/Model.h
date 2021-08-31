@@ -18,6 +18,8 @@
 #include "Renderer.h"
 #include "Mesh.hpp"
 
+#include <unordered_map>
+
 class Model {
 public:
     Model();
@@ -31,6 +33,7 @@ private:
     void loadMaterialTextures( aiMaterial* mat, aiTextureType aiType, Texture::TYPE type, std::vector<Texture>& outTextures );
 public:
     std::vector<Texture>    m_TexturesLoaded;
+    std::unordered_map<std::string, Texture*> m_TLoaded;
     std::vector<Mesh>       m_Meshes;
     std::string             m_Directory;
     bool                    m_GammaCorrection;

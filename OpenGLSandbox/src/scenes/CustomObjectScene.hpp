@@ -14,7 +14,7 @@ namespace Scenes {
 		virtual ~CustomObjectScene() override {}
 		virtual void OnStart() override {
 			Scene::OnStart();
-			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 			m_KeyFunctions[GLFW_KEY_SPACE] = [this] {
 				m_ControlsEnabled = !m_ControlsEnabled;
 				if( m_ControlsEnabled ) {

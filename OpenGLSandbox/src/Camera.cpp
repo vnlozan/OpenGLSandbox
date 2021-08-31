@@ -71,6 +71,8 @@ void Camera::ProcessMouseScroll( float yoffset )     {
 // calculates the front vector from the Camera's (updated) Euler Angles
 void Camera::updateCameraVectors() {
     // calculate the new Front vector
+    // x,z -> yaw
+    // xz as 1, y -> pitch
     glm::vec3 front;
     front.x = cos( glm::radians( Yaw ) ) * cos( glm::radians( Pitch ) );
     front.y = sin( glm::radians( Pitch ) );

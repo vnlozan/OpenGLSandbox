@@ -69,6 +69,7 @@ project "OpenGLSandbox"
     {
         "%{prj.name}/src",
         "%{prj.name}/vendor",
+        "%{prj.name}/vendor/spdlog/include",
         "%{prj.name}/vendor/GLFW/include",
         "%{prj.name}/vendor/ASSIMP/include",
         "%{prj.name}/vendor/Glad/include",

@@ -38,17 +38,17 @@ Texture::Texture( const char* path, Texture::TYPE type )
 }
 Texture::Texture( const Texture& t )
 	: type{ t.type }, m_FilePath{ t.m_FilePath }, m_RendererID{ t.m_RendererID }, m_Width{ t.m_Width }, m_Height{ t.m_Height }, m_BPP{ t.m_BPP } {
-	std::cout << "COPY CONSTRUCTOR" << std::endl;
+	//std::cout << "COPY CONSTRUCTOR" << std::endl;
 	m_LocalBuffer = t.m_LocalBuffer;
 }
 Texture::Texture( Texture&& t ) noexcept
 	: type{ t.type }, m_FilePath{ t.m_FilePath }, m_RendererID{ t.m_RendererID }, m_Width{ t.m_Width }, m_Height{ t.m_Height }, m_BPP{ t.m_BPP } {
-	std::cout << "MOVE CONSTRUCTOR" << std::endl;
+	//std::cout << "MOVE CONSTRUCTOR" << std::endl;
 	m_LocalBuffer = t.m_LocalBuffer;
 	t.m_LocalBuffer = nullptr;
 }
 Texture::~Texture() {
-	std::cout << "Texture deleted" << std::endl;
+	//std::cout << "Texture deleted" << std::endl;
 	//GLCall( glDeleteTextures( 1, &m_RendererID ) );
 }
 void Texture::ActivateTexture( unsigned int slot /* = 0 */ ) const {
@@ -62,6 +62,7 @@ void Texture::Unbind() const {
 }
 
 Texture& Texture::operator=( const Texture& rhs ) {
+	//std::cout << "COPY CONSTRUCTOR=" << std::endl;
 	if( this == &rhs ) {
 		return *this;
 	}
@@ -75,6 +76,7 @@ Texture& Texture::operator=( const Texture& rhs ) {
 	return *this;
 }
 Texture& Texture::operator=( Texture&& rhs ) noexcept {
+	//std::cout << "MOVE CONSTRUCTOR=" << std::endl;
 	if( this == &rhs ) {
 		return *this;
 	}

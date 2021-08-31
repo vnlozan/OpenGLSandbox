@@ -39,6 +39,7 @@ namespace Scenes {
 		}
 		/* Is called by Application object. All initialization should be here. */
 		virtual void OnStart() {
+			m_Camera.Position = glm::vec3( 0.0f, 0.0f, 5.0f );
 			glfwSetWindowUserPointer( m_Window, ( void* ) this );
 			glfwSetCursorPosCallback( m_Window, [] ( GLFWwindow* window, double xpos, double ypos ) {
 				Scene* scene = ( Scene* ) glfwGetWindowUserPointer( window );
@@ -63,7 +64,6 @@ namespace Scenes {
 				Scene* scene = ( Scene* ) glfwGetWindowUserPointer( window );
 				scene->m_UnhandledKeys.emplace( key, scancode, action, modes );
 			} );
-
 		}
 		/* Is called by Application object. All the rendering should be here. */
 		virtual void OnUpdate( float deltaTime ) {
@@ -79,7 +79,6 @@ namespace Scenes {
 			}
 			ImGui::End();
 		}
-
 		virtual void ProcessControls( float deltaTime ) {
 			while( !m_UnhandledKeys.empty() ) {
 				KeyEvent event = m_UnhandledKeys.front();
@@ -120,7 +119,6 @@ namespace Scenes {
 				}
 			}
 		}
-
 		void SetMenuBackFunction( std::function<void( void )> menuBackFunc ) {
 			this->m_menuBackFunc = menuBackFunc;
 		}

@@ -10,3 +10,6 @@
 [submodule "OpenGLSandbox/vendor/ASSIMP"]
 	path = OpenGLSandbox/vendor/ASSIMP
 	url = https://github.com/vnlozan/assimp
+[submodule "OpenGLSandbox/vendor/spdlog"]
+	path = OpenGLSandbox/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git

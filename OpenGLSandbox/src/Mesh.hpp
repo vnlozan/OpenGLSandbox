@@ -24,9 +24,8 @@ struct Vertex {
 
 class Mesh {
 public:
-    Mesh( std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures )
-        : m_Vertices{ vertices }, m_Indices{ indices }, m_Textures{ textures } {
-        m_Textures.reserve( 5 );
+    Mesh( std::vector<Vertex> &vertices, std::vector<unsigned int> &indices, std::vector<Texture> &textures )
+        : m_Vertices{ std::move( vertices ) }, m_Indices{ std::move( indices ) }, m_Textures{ std::move( textures ) } {
         Setup();
     }
     void Draw( Renderer& render, Shader& shader ) {

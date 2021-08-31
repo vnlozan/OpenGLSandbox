@@ -4,6 +4,7 @@
 
 #include "scenes/Scene.hpp"
 #include "scenes/MenuScene.hpp"
+#include "Log.h"
 
 class Application {
 public:
@@ -15,7 +16,8 @@ public:
 	
 	template<typename T>
 	void RegisterScene( const char* name ) {
-		std::cout << "Registering test " << name << std::endl;
+		//std::cout << "Registering test " << name << std::endl;
+		LOG_WARN( ( std::string )"Registering test " + name );
 		m_Scenes.push_back( std::make_pair( name, [&, name] () {
 			this->ChangeWindowTitle( m_WindowTitle + " - " + name );
 			T* t = new T( m_Width, m_Height, m_Window );

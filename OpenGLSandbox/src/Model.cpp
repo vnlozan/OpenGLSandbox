@@ -4,8 +4,11 @@
 
 #include "Model.h"
 
+static const int MIN_TEX_COUNT = 5;
+
 Model::Model( std::string const& path, bool gamma ) : m_GammaCorrection{ gamma } {
-    m_TexturesLoaded.reserve( 5 );
+    //m_TexturesLoaded.reserve( 5 );
+    m_TLoaded.reserve( MIN_TEX_COUNT );
     //Assimp::Logger::LogSeverity severity = Assimp::Logger::NORMAL;
     //Assimp::Logger::LogSeverity severity = Assimp::Logger::VERBOSE;
     //Assimp::DefaultLogger::create( "ASSIMP.logs.txt", severity, aiDefaultLogStream_STDOUT );
@@ -79,6 +82,7 @@ Mesh Model::processMesh( aiMesh* mesh, const aiScene* scene ) {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
+    textures.reserve( MIN_TEX_COUNT );
 
     for( unsigned int i = 0; i < mesh->mNumVertices; i++ ) {
         Vertex vertex;
@@ -133,56 +137,21 @@ Mesh Model::processMesh( aiMesh* mesh, const aiScene* scene ) {
     
     //std::cout << "TEXTURES SIZE = " << textures.size() << std::endl;
     //std::cout << "TEXTURES_Loaded SIZE = " << m_TexturesLoaded.size() << std::endl;
-
     return Mesh( vertices, indices, textures );
 }
 // Checks all material textures of a given type and loads the textures if they're not loaded yet.
 // the required info is returned as a Texture struct.
-std::vector<Texture> Model::loadMaterialTextures( aiMaterial* mat, aiTextureType aiType, Texture::TYPE type ) {
-    std::vector<Texture> textures;
-    for( unsigned int i = 0; i < mat->GetTextureCount( aiType ); i++ ) {
-        aiString str;
-        mat->GetTexture( aiType, i, &str );
-        // check if texture was loaded before and if so,
-        // continue to next iteration: skip loading a new texture
-        bool skip = false;
-        for( unsigned int j = 0; j < m_TexturesLoaded.size(); j++ ) {
-            if( std::strcmp( m_TexturesLoaded[j].m_FilePath.data(), str.C_Str() ) == 0 ) {
-                textures.push_back( m_TexturesLoaded[j] );
-                skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
-                break;
-            }
-        }
-        if( !skip ) {   // if texture hasn't been loaded already, load it
-            std::string fileName = m_Directory + '/' + str.data;
-            Texture texture{ fileName.c_str(), type };
-            textures.emplace_back( texture );
-            // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
-            m_TexturesLoaded.emplace_back( texture );
-        }
-    }
-    return textures;
-}
 void Model::loadMaterialTextures( aiMaterial* mat, aiTextureType aiType, Texture::TYPE type, std::vector<Texture>& outTextures ) {
     for( unsigned int i = 0; i < mat->GetTextureCount( aiType ); i++ ) {
         aiString str;
         mat->GetTexture( aiType, i, &str );
-        // check if texture was loaded before and if so,
-        // continue to next iteration: skip loading a new texture
-        bool skip = false;
-        for( unsigned int j = 0; j < m_TexturesLoaded.size(); j++ ) {
-            if( std::strcmp( m_TexturesLoaded[j].m_FilePath.data(), str.C_Str() ) == 0 ) {
-                outTextures.push_back( m_TexturesLoaded[j] );
-                skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
-                break;
-            }
-        }
-        if( !skip ) {   // if texture hasn't been loaded already, load it
+        if( m_TLoaded.count( str.C_Str() ) > 0 ) {
+            outTextures.push_back( *m_TLoaded[str.C_Str()] );
+        } else {
             std::string fileName = m_Directory + '/' + str.data;
-            Texture texture{ fileName.c_str(), type };
-            outTextures.emplace_back( texture );
-            // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
-            m_TexturesLoaded.emplace_back( texture );
+            Texture* texture = new Texture{ fileName.c_str(), type };
+            m_TLoaded[str.C_Str()] = texture;
+            outTextures.push_back( std::move( *texture ) );
         }
     }
 }

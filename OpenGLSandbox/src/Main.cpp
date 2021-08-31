@@ -5,9 +5,11 @@
 #include "scenes/PhongSpotLightScene.hpp"
 #include "scenes/PhongMultipleLightScene.hpp"
 #include "scenes/CustomObjectScene.hpp"
+#include "Log.h"
 
 int main( void ) {
 	Application app{ 1920, 1080, "OpenGL Sandbox" };
+	Log::Init();
 	app.Init();
 	app.RegisterScene<Scenes::PhongDirectLightScene>( "Scene : Phong DirectLight" );
 	app.RegisterScene<Scenes::PhongPointLightScene>( "Scene : Phong PointLight" );
