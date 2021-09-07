@@ -21,5 +21,9 @@ in vec2 v_TexCoord;
 uniform sampler2D u_Texture;
 
 void main() {
-    gl_FragColor = texture( u_Texture, v_TexCoord );
+    vec4 texColor = texture( u_Texture, v_TexCoord );
+    if( texColor.a < 0.1 ) {
+        discard;
+    }
+    gl_FragColor = texColor;
 }

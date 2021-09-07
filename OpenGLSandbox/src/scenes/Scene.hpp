@@ -38,7 +38,7 @@ namespace Scenes {
 			m_KeyFunctions.clear();
 		}
 		/* Is called by Application object. All initialization should be here. */
-		virtual void OnStart() {
+		virtual void OnStart( Renderer& renderer ) {
 			m_Camera.Position = glm::vec3( 0.0f, 0.0f, 5.0f );
 			glfwSetWindowUserPointer( m_Window, ( void* ) this );
 			glfwSetCursorPosCallback( m_Window, [] ( GLFWwindow* window, double xpos, double ypos ) {

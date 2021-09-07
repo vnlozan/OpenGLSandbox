@@ -17,8 +17,8 @@ namespace Scenes {
 		PhongDirectLightScene( GLuint width, GLuint height, GLFWwindow* window )
 			: Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
 		virtual ~PhongDirectLightScene() override {		}
-		virtual void OnStart() override {
-			Scene::OnStart();
+		virtual void OnStart( Renderer& renderer ) override {
+			Scene::OnStart( renderer );
 
 			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 			m_KeyFunctions[GLFW_KEY_SPACE] = [this] {
@@ -118,7 +118,7 @@ namespace Scenes {
 				ImGui::End();
 			}
 		}
-		virtual void OnRender( Renderer& render ) override {
+		virtual void OnRender( Renderer& renderer ) override {
 			m_Shader->Bind();
 
 			m_Texture->ActivateTexture( 0 );
@@ -145,7 +145,7 @@ namespace Scenes {
 
 			m_Shader->SetUniform1f( "u_Material.shininess", 32.0f );
 			m_Shader->SetUniform3f( "u_ViewPos", m_Camera.Position.r, m_Camera.Position.g, m_Camera.Position.b );
-			render.DrawArrays( *m_VAO, 36, *m_Shader );
+			renderer.DrawArrays( *m_VAO, 36, *m_Shader );
 
 
 			model = glm::mat4( 1.0f );
@@ -154,7 +154,7 @@ namespace Scenes {
 			mvp = projection * view * model; // THE RIGHT WAY pvm
 			m_Shader_lightSource->Bind();
 			m_Shader_lightSource->SetUniformMat4f( "u_MVP", mvp );
-			render.DrawArrays( *m_VAO_lightSource, 36, *m_Shader_lightSource );
+			renderer.DrawArrays( *m_VAO_lightSource, 36, *m_Shader_lightSource );
 		}
 	private:
 		std::unique_ptr<VertexArray> m_VAO;

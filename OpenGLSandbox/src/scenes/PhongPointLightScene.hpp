@@ -18,8 +18,8 @@ namespace Scenes {
 		PhongPointLightScene( GLuint width, GLuint height, GLFWwindow* window )
 			: Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
 		virtual ~PhongPointLightScene() override {}
-		virtual void OnStart() override {
-			Scene::OnStart();
+		virtual void OnStart( Renderer& renderer ) override {
+			Scene::OnStart( renderer );
 
 			// tell GLFW to capture our mouse
 			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
@@ -129,7 +129,7 @@ namespace Scenes {
 				ImGui::End();
 			}
 		}
-		virtual void OnRender( Renderer& render ) override {
+		virtual void OnRender( Renderer& renderer ) override {
 			m_Shader->Bind();
 
 			m_Texture->ActivateTexture( 0 );
@@ -162,7 +162,7 @@ namespace Scenes {
 
 				m_Shader->SetUniformMat4f( "u_Model", model );
 				m_Shader->SetUniformMat4f( "u_MVP", mvp );
-				render.DrawArrays( *m_VAO, 36, *m_Shader );
+				renderer.DrawArrays( *m_VAO, 36, *m_Shader );
 			}
 
 			glm::mat4 model = glm::mat4( 1.0f );
@@ -171,7 +171,7 @@ namespace Scenes {
 			glm::mat4 mvp = projection * view * model; // THE RIGHT WAY pvm
 			m_Shader_lightSource->Bind();
 			m_Shader_lightSource->SetUniformMat4f( "u_MVP", mvp );
-			render.DrawArrays( *m_VAO_lightSource, 36, *m_Shader_lightSource );
+			renderer.DrawArrays( *m_VAO_lightSource, 36, *m_Shader_lightSource );
 		}
 	private:
 		std::unique_ptr<VertexArray> m_VAO;

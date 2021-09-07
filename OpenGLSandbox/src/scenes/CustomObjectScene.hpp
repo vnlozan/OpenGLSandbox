@@ -12,8 +12,9 @@ namespace Scenes {
 	public:
 		CustomObjectScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window } {}
 		virtual ~CustomObjectScene() override {}
-		virtual void OnStart() override {
-			Scene::OnStart();
+		virtual void OnStart( Renderer& renderer ) override {
+			Scene::OnStart( renderer );
+			renderer.EnableFaceCull();
 			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 			m_KeyFunctions[GLFW_KEY_SPACE] = [this] {
 				m_ControlsEnabled = !m_ControlsEnabled;
@@ -38,7 +39,7 @@ namespace Scenes {
 				ImGui::End();
 			}
 		}
-		virtual void OnRender( Renderer& render ) override {
+		virtual void OnRender( Renderer& renderer ) override {
 			m_Shader->Bind();
 
 			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
@@ -49,7 +50,7 @@ namespace Scenes {
 			glm::mat4 mvp = projection * view * model;
 			m_Shader->SetUniformMat4f( "u_MVP", mvp );
 
-			m_Model->Draw( render, *m_Shader );
+			m_Model->Draw( renderer, *m_Shader );
 		}
 		void SetWireframeMode( bool enable = true ) {
 			if( enable ) {

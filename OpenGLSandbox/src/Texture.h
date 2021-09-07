@@ -11,7 +11,7 @@ public:
 		AMBIENT = 4
 	};
 	
-	Texture( const char* path, Texture::TYPE type = Texture::TYPE::DIFFUSE );
+	Texture( const char* path, Texture::TYPE type = Texture::TYPE::DIFFUSE, int params = GL_REPEAT );
 	Texture( const Texture& texture );
 	Texture( Texture&& texture ) noexcept;
 	~Texture();

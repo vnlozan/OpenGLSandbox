@@ -8,7 +8,7 @@ namespace Scenes {
 			Scene** currentScene, std::vector < std::pair<std::string, std::function<Scene* ( )>>>* scenes
 		) : Scene{ width, height, window }, m_CurrentScene{ currentScene }, m_Scenes{ scenes } {}
 		virtual ~MenuScene() override {	}
-		virtual void OnStart() override {
+		virtual void OnStart( Renderer& renderer ) override {
 			glfwSetWindowUserPointer( m_Window, NULL );
 			glfwSetCursorPosCallback( m_Window, NULL );
 			glfwSetScrollCallback( m_Window, NULL );

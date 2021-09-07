@@ -9,7 +9,7 @@
 class Application {
 public:
 	Application( GLuint width, GLuint height, std::string windowTitle )
-		: m_Width{ width }, m_Height{ height }, m_WindowTitle{ windowTitle }, m_CurrentScene{ nullptr }, m_Window{ nullptr } {}
+		: m_Renderer{}, m_Width{ width }, m_Height{ height }, m_WindowTitle{ windowTitle }, m_CurrentScene{ nullptr }, m_Window{ nullptr } {}
 	Application( const Application& ) = delete;
 	Application( const Application&& ) = delete;
 	~Application() {}
@@ -21,7 +21,7 @@ public:
 		m_Scenes.push_back( std::make_pair( name, [&, name] () {
 			this->ChangeWindowTitle( m_WindowTitle + " - " + name );
 			T* t = new T( m_Width, m_Height, m_Window );
-			t->OnStart();
+			t->OnStart( *m_Renderer );
 			t->SetMenuBackFunction( [this](void) { this->GetBackToMenu(); } );
 			return t;
 		} ) );
@@ -51,8 +51,11 @@ public:
 		}
 
 		glViewport( 0, 0, m_Width, m_Height );
-		GLCall( glEnable( GL_BLEND ) );
-		GLCall( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
+
+		m_Renderer->EnableDepthTest();
+		m_Renderer->EnableStencilTest();
+		//m_Renderer->EnableBlend();
+		//m_Renderer->EnableFaceCull();
 
 		InitMenu();
 
@@ -62,14 +65,12 @@ public:
 		float deltaTime = 0.0f;
 		float lastFrame = 0.0f;
 
-		Renderer renderer;
-
 		StartImGui();
 		
 		while( !glfwWindowShouldClose( m_Window ) ) {
 			glfwPollEvents();
 
-			renderer.Clear();
+			m_Renderer->Clear();
 
 			float currentFrame = glfwGetTime();
 			deltaTime = currentFrame - lastFrame;
@@ -81,7 +82,7 @@ public:
 			ImGui::NewFrame();
 
 			m_CurrentScene->OnUpdate( deltaTime );
-			m_CurrentScene->OnRender( renderer );
+			m_CurrentScene->OnRender( *m_Renderer );
 			m_CurrentScene->OnImGuiRender();
 
 			ImGui::Render();
@@ -99,7 +100,7 @@ public:
 private:
 	void InitMenu() {
 		m_CurrentScene = new Scenes::MenuScene( m_Width, m_Height, m_Window, &m_CurrentScene, &m_Scenes );
-		m_CurrentScene->OnStart();
+		m_CurrentScene->OnStart( *m_Renderer );
 	}
 	void ChangeWindowTitle( std::string name ) {
 		glfwSetWindowTitle( m_Window, name.c_str() );
@@ -128,6 +129,7 @@ public:
 	GLuint m_Height;
 	std::string m_WindowTitle;
 private:
+	Renderer* m_Renderer;
 	std::vector < std::pair<std::string, std::function<Scenes::Scene* ( )>>> m_Scenes;
 	Scenes::Scene* m_CurrentScene;
 };
