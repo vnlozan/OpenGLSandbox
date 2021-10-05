@@ -9,10 +9,12 @@ out vec3 Normal;
 out vec2 TexCoord;
 out vec3 FragPos;
 
+// as example
+layout( std140 ) uniform ub_Matrices{
+    mat4 u_Projection;
+    mat4 u_View;
+};
 uniform mat4 u_Model;
-
-// Model View Projection matrix
-uniform mat4 u_MVP;
 
 void main() {
     FragPos = vec3( u_Model * vec4( position, 1.0 ) );
@@ -22,7 +24,7 @@ void main() {
     // should be done on cpu side for better performance
     Normal = mat3( transpose( inverse( u_Model ) ) ) * normal;
 
-    gl_Position = u_MVP * vec4( position, 1.0f );
+    gl_Position = u_Projection * u_View * u_Model * vec4( position, 1.0f );
     TexCoord = texCoord;
 }
 

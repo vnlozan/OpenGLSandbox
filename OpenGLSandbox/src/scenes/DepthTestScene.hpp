@@ -1,22 +1,17 @@
 #include <memory>
-
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-
 #include "scenes/Scene.hpp"
-
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "VertexBufferLayout.hpp"
+#include "_VertexArray.h"
+#include "_VertexBuffer.h"
 #include "Shader.h"
 #include "Texture.h"
 
 namespace Scenes {
-	class DepthTestsScene: public Scene {
+	class DepthTestScene: public Scene {
 	public:
-		DepthTestsScene( GLuint width, GLuint height, GLFWwindow* window )
-			: Scene{ width, height, window } {}
-		virtual ~DepthTestsScene() override {}
+		DepthTestScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window } {}
+		virtual ~DepthTestScene() override {}
 		virtual void OnStart( Renderer& renderer ) override {
 			Scene::OnStart( renderer );
 			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
@@ -32,7 +27,7 @@ namespace Scenes {
 				}
 			};
 			
-			GLfloat cubeVertices[] = {
+			float cubeVertices[] = {
 				// positions          // texture Coords
 				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 				0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
@@ -76,7 +71,7 @@ namespace Scenes {
 				-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
 				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f
 			};
-			GLfloat planeVertices[] = {
+			float planeVertices[] = {
 				// positions       // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
 				5.0f, -0.5f, 5.0f, 2.0f, 0.0f,
 				-5.0f, -0.5f, 5.0f, 0.0f, 0.0f,
@@ -86,33 +81,21 @@ namespace Scenes {
 				-5.0f, -0.5f, -5.0f, 0.0f, 2.0f,
 				5.0f, -0.5f, -5.0f, 2.0f, 2.0f
 			};
+
+			m_CubeVBO = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_CubeVBO->AddLayoutElement( GL_FLOAT, 3 );
+			m_CubeVBO->AddLayoutElement( GL_FLOAT, 2 );
+			m_CubeVAO = std::make_unique<_VertexArray>();
+			m_CubeVAO->AddBuffer( *m_CubeVBO );
+
+			m_PlaneVBO = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_PlaneVBO->AddLayoutElement( GL_FLOAT, 3 );
+			m_PlaneVBO->AddLayoutElement( GL_FLOAT, 2 );
+			m_PlaneVAO = std::make_unique<_VertexArray>();
+			m_PlaneVAO->AddBuffer( *m_PlaneVBO );
 			
-			//m_Shader = std::make_unique<Shader>( "res/shaders/DepthTests_1.shader" );
-			m_Shader = std::make_unique<Shader>( "res/shaders/DepthTests_2.shader" );
+			m_Shader = std::make_unique<Shader>( "res/shaders/Depth.shader" );
 			m_Shader->Bind();
-
-			{
-				m_CubeVBO = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
-				VertexBufferLayout layout;
-				layout.Push<float>( 3 );
-				layout.Push<float>( 2 );
-				m_CubeVAO = std::make_unique<VertexArray>();
-				m_CubeVAO->AddBuffer( *m_CubeVBO, layout );
-				m_CubeVAO->Unbind();
-				m_CubeVBO->Unbind();
-			}
-			{
-				m_PlaneVBO = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
-				VertexBufferLayout layout;
-				layout.Push<float>( 3 );
-				layout.Push<float>( 2 );
-				m_PlaneVAO = std::make_unique<VertexArray>();
-				m_PlaneVAO->AddBuffer( *m_PlaneVBO, layout );
-				m_PlaneVAO->Unbind();
-				m_PlaneVBO->Unbind();
-			}
-
-			m_Shader->Unbind();
 		}
 		virtual void OnImGuiRender() override {
 			Scene::OnImGuiRender();
@@ -146,10 +129,12 @@ namespace Scenes {
 			renderer.DrawArrays( *m_PlaneVAO, 36, *m_Shader );
 		}
 	private:
-		std::unique_ptr<VertexArray> m_CubeVAO;
-		std::unique_ptr<VertexArray> m_PlaneVAO;
-		std::unique_ptr<VertexBuffer> m_CubeVBO;
-		std::unique_ptr<VertexBuffer> m_PlaneVBO;
+		std::unique_ptr<_VertexArray> m_CubeVAO;
+		std::unique_ptr<_VertexArray> m_PlaneVAO;
+
+		std::unique_ptr<_VertexBuffer> m_CubeVBO;
+		std::unique_ptr<_VertexBuffer> m_PlaneVBO;
+
 		std::unique_ptr<Shader> m_Shader;
 	};
 }

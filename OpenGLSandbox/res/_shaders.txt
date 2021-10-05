@@ -1,0 +1,41 @@
+VERTEX_SHADER:
+		(gl_Position) is output variable
+
+		(gl_PointSize) is output variable
+	It is possible to set the size of the points being rendered via OpenGL's glPointSize function,
+	but we can also influence this value in the vertex shader.
+	One output variable defined by GLSL is called gl_PointSize that is a float variable where you can set the point's width and height in pixels.
+	By setting the point's size in the vertex shader we get per-vertex control over this point's dimensions.
+	Influencing the point sizes in the vertex shader is disabled by default,
+	but if you want to enable this you'll have to enable OpenGL's GL_PROGRAM_POINT_SIZE.
+
+		(gl_VertexID) is input variable (readonly)
+	The integer variable gl_VertexID holds the current ID of the vertex we're drawing.
+	When doing indexed rendering (with glDrawElements) this variable holds the current index of the vertex we're drawing.
+	When drawing without indices (via glDrawArrays) this variable holds
+	the number of the currently processed vertex since the start of the render call.
+
+FRAGMENT_SHADER:
+		(gl_FragCoord) is input variable (readonly)
+		z component of the gl_FragCoord vector is equal to the depth value of that particular fragment.
+		The gl_FragCoord's x and y component are the window- or screen-space coordinates of the fragment,
+		originating from the bottom-left of the window.
+
+		(gl_FrontFacing) is input variable (readonly)
+		The gl_FrontFacing variable tells us if the current fragment is part of a front-facing or a back-facing face.
+		We could, for example, decide to output different colors for all back faces.
+		The gl_FrontFacing variable is a bool that is true if the fragment is part of a front face and false otherwise.
+
+		(gl_FragDepth) is output variable
+		GLSL gives us an output variable called gl_FragDepth that we can use to manually set the depth value of the fragment within the shader.
+		To set the depth value in the shader we write any value between 0.0 and 1.0 to the output variable.
+		If the shader does not write anything to gl_FragDepth, the variable will automatically take its value from gl_FragCoord.z.
+		Setting the depth value manually has a major disadvantage however.
+		That is because OpenGL disables early depth testing as soon as we write to gl_FragDepth in the fragment shader.
+		It is disabled, because OpenGL cannot know what depth value the fragment will have before we run the fragment shader,
+		since the fragment shader may actually change this value.
+		layout (depth_<condition>) out float gl_FragDepth;
+		any	- The default value. Early depth testing is disabled.
+		greater	- You can only make the depth value larger compared to gl_FragCoord.z.
+		less - You can only make the depth value smaller compared to gl_FragCoord.z.
+		unchange - If you write to gl_FragDepth, you will write exactly gl_FragCoord.z

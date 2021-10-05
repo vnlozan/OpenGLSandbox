@@ -15,12 +15,10 @@ namespace Scenes {
 
 	class PhongPointLightScene: public Scene {
 	public:
-		PhongPointLightScene( GLuint width, GLuint height, GLFWwindow* window )
-			: Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
+		PhongPointLightScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
 		virtual ~PhongPointLightScene() override {}
 		virtual void OnStart( Renderer& renderer ) override {
 			Scene::OnStart( renderer );
-
 			// tell GLFW to capture our mouse
 			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 

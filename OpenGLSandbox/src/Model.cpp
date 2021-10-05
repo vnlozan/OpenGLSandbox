@@ -1,7 +1,7 @@
 #include <iostream>
-
 #include "stb_image/stb_image.h"
-
+#include "Renderer.h"
+#include "Shader.h"
 #include "Model.h"
 
 static const int MIN_TEX_COUNT = 5;

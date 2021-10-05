@@ -1,13 +1,10 @@
 #include <memory>
-
+#include <string>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-
 #include "scenes/Scene.hpp"
-#include <string>
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "VertexBufferLayout.hpp"
+#include "_VertexArray.h"
+#include "_VertexBuffer.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -15,8 +12,7 @@ namespace Scenes {
 
 	class PhongMultipleLightScene: public Scene {
 	public:
-		PhongMultipleLightScene( GLuint width, GLuint height, GLFWwindow* window )
-			: Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
+		PhongMultipleLightScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
 		virtual ~PhongMultipleLightScene() override {}
 		virtual void OnStart( Renderer& renderer ) override {
 			Scene::OnStart( renderer );
@@ -35,7 +31,8 @@ namespace Scenes {
 					glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 				}
 			};
-			GLfloat vertices[] = {
+			
+			float vertices[] = {
 				-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
 				0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
 				0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,	// triangle 1 vertices + normals + texture coords
@@ -79,52 +76,45 @@ namespace Scenes {
 				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
 			};
 
-			cubePositions.emplace_back( glm::vec3( 0.0f, 0.0f, 0.0f ) );
-			cubePositions.emplace_back( glm::vec3( 2.0f, 5.0f, -15.0f ) );
-			cubePositions.emplace_back( glm::vec3( -1.5f, -2.2f, -2.5f ) );
-			cubePositions.emplace_back( glm::vec3( -3.8f, -2.0f, -12.3f ) );
-			cubePositions.emplace_back( glm::vec3( 2.4f, -0.4f, -3.5f ) );
-			cubePositions.emplace_back( glm::vec3( -1.7f, 3.0f, -7.5f ) );
-			cubePositions.emplace_back( glm::vec3( 1.3f, -2.0f, -2.5f ) );
-			cubePositions.emplace_back( glm::vec3( 1.5f, 2.0f, -2.5f ) );
-			cubePositions.emplace_back( glm::vec3( 1.5f, 0.2f, -1.5f ) );
-			cubePositions.emplace_back( glm::vec3( -1.3f, 1.0f, -1.5f ) );
+			m_CubePositions.emplace_back( glm::vec3( 0.0f, 0.0f, 0.0f ) );
+			m_CubePositions.emplace_back( glm::vec3( 2.0f, 5.0f, -15.0f ) );
+			m_CubePositions.emplace_back( glm::vec3( -1.5f, -2.2f, -2.5f ) );
+			m_CubePositions.emplace_back( glm::vec3( -3.8f, -2.0f, -12.3f ) );
+			m_CubePositions.emplace_back( glm::vec3( 2.4f, -0.4f, -3.5f ) );
+			m_CubePositions.emplace_back( glm::vec3( -1.7f, 3.0f, -7.5f ) );
+			m_CubePositions.emplace_back( glm::vec3( 1.3f, -2.0f, -2.5f ) );
+			m_CubePositions.emplace_back( glm::vec3( 1.5f, 2.0f, -2.5f ) );
+			m_CubePositions.emplace_back( glm::vec3( 1.5f, 0.2f, -1.5f ) );
+			m_CubePositions.emplace_back( glm::vec3( -1.3f, 1.0f, -1.5f ) );
 
-			pointLightPositions.emplace_back( glm::vec3( 0.7f, 0.2f, 2.0f ) );
-			pointLightPositions.emplace_back( glm::vec3( 2.3f, -3.3f, -4.0f ) );
-			pointLightPositions.emplace_back( glm::vec3( -4.0f, 2.0f, -12.0f ) );
-			pointLightPositions.emplace_back( glm::vec3( 0.0f, 0.0f, -3.0f ) );
+			m_PointLightPositions.emplace_back( glm::vec3( 0.7f, 0.2f, 2.0f ) );
+			m_PointLightPositions.emplace_back( glm::vec3( 2.3f, -3.3f, -4.0f ) );
+			m_PointLightPositions.emplace_back( glm::vec3( -4.0f, 2.0f, -12.0f ) );
+			m_PointLightPositions.emplace_back( glm::vec3( 0.0f, 0.0f, -3.0f ) );
 
+			m_VAO = std::make_unique<_VertexArray>();
 
-			// Configure VBO
-			m_VBO = std::make_unique<VertexBuffer>( vertices, sizeof( vertices ) );
-			VertexBufferLayout layout; // position x3, normal x3, uv x2
-			layout.Push<float>( 3 );
-			layout.Push<float>( 3 );
-			layout.Push<float>( 2 );
-			// Configure lightning object
-			m_VAO = std::make_unique<VertexArray>();
-			m_VAO->AddBuffer( *m_VBO, layout );
+			m_VBO = std::make_unique<_VertexBuffer>( vertices, sizeof( vertices ) );
+			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // positions
+			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // normals
+			m_VBO->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
 
-			m_Texture = std::make_unique<Texture>( "res/textures/container_diffuse.png" );
-			m_TextureSpec = std::make_unique<Texture>( "res/textures/container_specular.png" );
+			m_VAO->AddBuffer( *m_VBO );
+
+			m_TextureDiffuse = std::make_unique<Texture>( "res/textures/container_diffuse.png" );
+			m_TextureSpecular = std::make_unique<Texture>( "res/textures/container_specular.png" );
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/PhongMultipleLight.shader" );
 			m_Shader->Bind();
 			m_Shader->SetUniform1i( "u_Material.diffuse", 0 );
 			m_Shader->SetUniform1i( "u_Material.specular", 1 );
-			m_VAO->Unbind();
-			m_Shader->Unbind();
-			// Configure lightning source
-			m_VAO_lightSource = std::make_unique<VertexArray>();
-			m_VAO_lightSource->AddBuffer( *m_VBO, layout );
-			m_Shader_lightSource = std::make_unique<Shader>( "res/shaders/Basic.shader" );
-			m_Shader_lightSource->Bind();
-			m_Shader_lightSource->SetUniform3f( "u_Color", 1.0f, 0.0f, 0.0f );
-			m_VAO_lightSource->Unbind();
-			m_Shader_lightSource->Unbind();
-			//
-			m_VBO->Unbind();
+
+			m_VAOLight = std::make_unique<_VertexArray>();
+			m_VAOLight->AddBuffer( *m_VBO );
+
+			m_ShaderLight = std::make_unique<Shader>( "res/shaders/Color.shader" );
+			m_ShaderLight->Bind();
+			m_ShaderLight->SetUniform3f( "u_Color", 1.0f, 0.0f, 0.0f );
 		}
 		virtual void OnImGuiRender() override {
 			Scene::OnImGuiRender();
@@ -135,24 +125,29 @@ namespace Scenes {
 			}
 		}
 		virtual void OnRender( Renderer& renderer ) override {
+			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
+			glm::mat4 view = m_Camera.GetViewMatrix();
+
 			m_Shader->Bind();
 
-			m_Texture->ActivateTexture( 0 );
-			m_Texture->Bind();
-			m_TextureSpec->ActivateTexture( 1 );
-			m_TextureSpec->Bind();
+			m_TextureDiffuse->ActivateTexture( 0 );
+			m_TextureDiffuse->Bind();
+			m_TextureSpecular->ActivateTexture( 1 );
+			m_TextureSpecular->Bind();
 
 			m_Shader->SetUniform3f( "u_ViewPos", m_Camera.Position );
 			m_Shader->SetUniform1f( "u_Material.shininess", 32.0f );
+			
 			// Direction light
 			m_Shader->SetUniform3f( "u_DirectionLight.direction", -0.2f, -1.0f, -0.3f );
 			m_Shader->SetUniform3f( "u_DirectionLight.ambient", 0.0f, 0.05f, 0.0f );
 			m_Shader->SetUniform3f( "u_DirectionLight.diffuse", 0.0f, 1.0f, 0.0f );
 			m_Shader->SetUniform3f( "u_DirectionLight.specular", 0.0f, 0.5f, 0.0f );
+
 			// Point light
-			for( size_t i = 0; i < pointLightPositions.size(); i++ ) {
+			for( size_t i = 0; i < m_PointLightPositions.size(); i++ ) {
 				std::string tmp = std::to_string( i );
-				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].position", pointLightPositions[i] );
+				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].position", m_PointLightPositions[i] );
 				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].ambient", 0.02f, 0.0f, 0.0f );
 				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].diffuse", 1.0f, 0.0f, 0.0f );
 				m_Shader->SetUniform3f( "u_PointLights[" + tmp + "].specular", 0.5f, 0.0f, 0.0f );
@@ -172,13 +167,11 @@ namespace Scenes {
 			m_Shader->SetUniform1f( "u_SpotLight.cutOff", glm::cos( glm::radians( 12.5f ) ) );
 			m_Shader->SetUniform1f( "u_SpotLight.outerCutOff", glm::cos( glm::radians( 15.0f ) ) );
 
-
-			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
-			glm::mat4 view = m_Camera.GetViewMatrix();
-			for( size_t i = 0; i < cubePositions.size(); i++ ) {
+			// Draw call for all the lightened cubes
+			for( size_t i = 0; i < m_CubePositions.size(); i++ ) {
 
 				glm::mat4 model = glm::mat4( 1.0f );
-				model = glm::translate( model, cubePositions[i] );
+				model = glm::translate( model, m_CubePositions[i] );
 
 				float angle = 20.0f * i;
 				model = glm::rotate( model, glm::radians( angle ), glm::vec3( 1.0f, 0.3f, 0.5f ) );
@@ -189,28 +182,33 @@ namespace Scenes {
 				renderer.DrawArrays( *m_VAO, 36, *m_Shader );
 			}
 
-			m_Shader_lightSource->Bind();
-			for( size_t i = 0; i < pointLightPositions.size(); i++ ) {
+			// Draw call for all the light sources
+			m_ShaderLight->Bind();
+			for( size_t i = 0; i < m_PointLightPositions.size(); i++ ) {
 				glm::mat4 model = glm::mat4( 1.0f );
-				model = glm::translate( model, pointLightPositions[i] );
+				model = glm::translate( model, m_PointLightPositions[i] );
 				model = glm::scale( model, glm::vec3( 0.2f ) ); // Make it a smaller cube
 				glm::mat4 mvp = projection * view * model; // THE RIGHT WAY pvm
-				m_Shader_lightSource->SetUniformMat4f( "u_MVP", mvp );
+				m_ShaderLight->SetUniformMat4f( "u_MVP", mvp );
 				glDrawArrays( GL_TRIANGLES, 0, 36 );
-				renderer.DrawArrays( *m_VAO_lightSource, 36, *m_Shader_lightSource );
+				renderer.DrawArrays( *m_VAOLight, 36, *m_ShaderLight );
 			}
 		}
 	private:
-		std::unique_ptr<VertexArray> m_VAO;
-		std::unique_ptr<VertexBuffer> m_VBO;
+		std::unique_ptr<_VertexBuffer> m_VBO;
+
+		std::unique_ptr<_VertexArray> m_VAOLight;
+		std::unique_ptr<_VertexArray> m_VAO;
+		
+		std::unique_ptr<Texture> m_TextureDiffuse;
+		std::unique_ptr<Texture> m_TextureSpecular;
+
+		std::unique_ptr<Shader> m_ShaderLight;
 		std::unique_ptr<Shader> m_Shader;
-		std::unique_ptr<Texture> m_Texture;
-		std::unique_ptr<Texture> m_TextureSpec;
-		std::unique_ptr<VertexArray> m_VAO_lightSource;
-		std::unique_ptr<Shader> m_Shader_lightSource;
+
 		glm::vec3 m_LightPos;
 
-		std::vector<glm::vec3> cubePositions;
-		std::vector<glm::vec3> pointLightPositions;
+		std::vector<glm::vec3> m_CubePositions;
+		std::vector<glm::vec3> m_PointLightPositions;
 	};
 }

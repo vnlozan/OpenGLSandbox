@@ -1,7 +1,4 @@
-#pragma once
-
 #include <iostream>
-
 #include "scenes/Scene.hpp"
 #include "scenes/MenuScene.hpp"
 #include "Log.h"
@@ -52,10 +49,7 @@ public:
 
 		glViewport( 0, 0, m_Width, m_Height );
 
-		m_Renderer->EnableDepthTest();
-		m_Renderer->EnableStencilTest();
-		//m_Renderer->EnableBlend();
-		//m_Renderer->EnableFaceCull();
+		SetDefaults();
 
 		InitMenu();
 
@@ -119,9 +113,18 @@ private:
 		ImGui::DestroyContext();
 	}
 	void GetBackToMenu() {
+		SetDefaults();
 		ChangeWindowTitle( m_WindowTitle );
 		delete m_CurrentScene;
 		InitMenu();
+	}
+	void SetDefaults() {
+		m_Renderer->ClearColor();
+		m_Renderer->SetPolygonMode();
+		m_Renderer->EnableDepthTest();
+		//m_Renderer->EnableStencilTest( true );
+		//m_Renderer->EnableBlend();
+		//m_Renderer->EnableFaceCull();
 	}
 public:
 	GLFWwindow* m_Window;

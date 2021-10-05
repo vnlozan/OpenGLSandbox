@@ -24,6 +24,9 @@ float LinearizeDepth( float depth ) {
 }
 
 void main() {
+
+    //FragColor = vec4( vec3( gl_FragCoord.z ), 1.0f );
+
     float depth = LinearizeDepth( gl_FragCoord.z ) / far; // divide by far for demonstration
     FragColor = vec4( vec3( depth ), 1.0 );
 }

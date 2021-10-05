@@ -1,17 +1,15 @@
 #include <memory>
-
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-
 #include "scenes/Scene.hpp"
 #include "Model.h"
 
 namespace Scenes {
 
-	class CustomObjectScene: public Scene {
+	class ModelScene: public Scene {
 	public:
-		CustomObjectScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window } {}
-		virtual ~CustomObjectScene() override {}
+		ModelScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window } {}
+		virtual ~ModelScene() override {}
 		virtual void OnStart( Renderer& renderer ) override {
 			Scene::OnStart( renderer );
 			renderer.EnableFaceCull();
@@ -28,7 +26,12 @@ namespace Scenes {
 				}
 			};	
 			m_Model = std::make_unique<Model>( "res/models/backpack/backpack.obj" );
-			m_Shader = std::make_unique<Shader>( "res/shaders/BasicModel.shader" );
+
+			//m_ShaderVertexNormal = std::make_unique<Shader>( "res/shaders/VertexNormal.shader" );
+			//m_ShaderPrimitiveNormal = std::make_unique<Shader>( "res/shaders/PrimitiveNormal.shader" );
+			m_Shader = std::make_unique<Shader>( "res/shaders/Model.shader" );
+			//m_Shader = std::make_unique<Shader>( "res/shaders/Explosion_g.shader" );
+
 		}
 		virtual void OnImGuiRender() override {
 			Scene::OnImGuiRender();
@@ -40,17 +43,25 @@ namespace Scenes {
 			}
 		}
 		virtual void OnRender( Renderer& renderer ) override {
-			m_Shader->Bind();
-
 			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
 			glm::mat4 view = m_Camera.GetViewMatrix();
 			glm::mat4 model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( 0.0f, 0.0f, 0.0f ) ); // translate it down so it's at the center of the scene
 			model = glm::scale( model, glm::vec3( 1.0f, 1.0f, 1.0f ) );	// it's a bit too big for our scene, so scale it down
 			glm::mat4 mvp = projection * view * model;
-			m_Shader->SetUniformMat4f( "u_MVP", mvp );
 
+			m_Shader->Bind();
+			m_Shader->SetUniformMat4f( "u_MVP", mvp );
+			//m_Shader->SetUniform1f( "u_Time", glfwGetTime() );
 			m_Model->Draw( renderer, *m_Shader );
+
+			//m_ShaderVertexNormal->Bind();
+			//m_ShaderVertexNormal->SetUniformMat4f( "u_MV", view * model );
+			//m_ShaderVertexNormal->SetUniformMat4f( "u_Projection", projection );
+			//m_Model->Draw( renderer, *m_ShaderVertexNormal );
+			//m_ShaderPrimitiveNormal->Bind();
+			//m_ShaderPrimitiveNormal->SetUniformMat4f( "u_MVP", mvp );
+			//m_Model->Draw( renderer, *m_ShaderPrimitiveNormal );
 		}
 		void SetWireframeMode( bool enable = true ) {
 			if( enable ) {
@@ -61,6 +72,9 @@ namespace Scenes {
 		}
 	private:
 		std::unique_ptr<Model> m_Model;
+
 		std::unique_ptr<Shader> m_Shader;
+		std::unique_ptr<Shader> m_ShaderVertexNormal;
+		std::unique_ptr<Shader> m_ShaderTriangleNormal;
 	};
 }

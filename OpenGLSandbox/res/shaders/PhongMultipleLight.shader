@@ -111,7 +111,8 @@ vec3 ProcessSpotLight( SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir,
     // attenuation
     float distance = length( light.position - fragPos );
     float attenuation = 1.0 / ( light.constant + light.linear * distance + light.quadratic * ( distance * distance ) );
-    // spotlight intensity
+    // spotlight intensity (soft edges)
+    // check if lighting is inside the spotlight cone
     float theta = dot( lightDir, normalize( -light.direction ) );
     float epsilon = light.cutOff - light.outerCutOff;
     float intensity = clamp( ( theta - light.outerCutOff ) / epsilon, 0.0, 1.0 );

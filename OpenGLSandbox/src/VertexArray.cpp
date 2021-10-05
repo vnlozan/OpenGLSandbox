@@ -3,15 +3,15 @@
 #include "Renderer.h"
 
 VertexArray::VertexArray() {
-	GLCall( glGenVertexArrays( 1, &m_RendererID ) );
+	GLCall( glGenVertexArrays( 1, &m_RendererId ) );
 }
 
 VertexArray::~VertexArray() {
-	GLCall( glDeleteVertexArrays( 1, &m_RendererID ) );
+	GLCall( glDeleteVertexArrays( 1, &m_RendererId ) );
 }
 
 void VertexArray::Bind() const {
-	GLCall( glBindVertexArray( m_RendererID ) );
+	GLCall( glBindVertexArray( m_RendererId ) );
 }
 
 void VertexArray::Unbind() const {

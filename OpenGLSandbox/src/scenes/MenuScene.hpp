@@ -5,7 +5,7 @@ namespace Scenes {
 	class MenuScene: public Scene {
 	public:
 		MenuScene( GLuint width, GLuint height, GLFWwindow* window,
-			Scene** currentScene, std::vector < std::pair<std::string, std::function<Scene* ( )>>>* scenes
+			Scene** currentScene, std::vector<std::pair<std::string, std::function<Scene* ( )>>>* scenes
 		) : Scene{ width, height, window }, m_CurrentScene{ currentScene }, m_Scenes{ scenes } {}
 		virtual ~MenuScene() override {	}
 		virtual void OnStart( Renderer& renderer ) override {

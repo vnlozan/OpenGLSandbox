@@ -1,24 +1,19 @@
 #pragma once
-
 #include <vector>
-
+#include <unordered_map>
 #include <glad/glad.h> 
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/DefaultLogger.hpp>
 #include <assimp/LogStream.hpp>
-
-#include "Shader.h"
 #include "Texture.h"
-#include "Renderer.h"
 #include "Mesh.hpp"
 
-#include <unordered_map>
+class Renderer;
+class Shader;
 
 class Model {
 public:

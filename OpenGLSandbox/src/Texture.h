@@ -1,17 +1,21 @@
 #pragma once
+#include <string>
 #include "Renderer.h"
 
 class Texture {
 public:
 	enum class TYPE {
-		DIFFUSE = 0,
-		SPECULAR = 1,
-		NORMAL = 2,
-		HEIGHT = 3,
-		AMBIENT = 4
+		//CUBEMAP = 0,
+		BUFFER = 1,
+		DIFFUSE = 2,
+		SPECULAR = 3,
+		NORMAL = 4,
+		HEIGHT = 5,
+		AMBIENT = 6
 	};
 	
 	Texture( const char* path, Texture::TYPE type = Texture::TYPE::DIFFUSE, int params = GL_REPEAT );
+	Texture( int width, int height );
 	Texture( const Texture& texture );
 	Texture( Texture&& texture ) noexcept;
 	~Texture();
@@ -25,10 +29,11 @@ public:
 
 	inline int	GetWidth() const { return m_Width; }
 	inline int	GetHeight()	const { return m_Height; }
+	inline unsigned int GetRendererId() { return m_RendererId; }
 public:
 	Texture::TYPE type;
 	std::string m_FilePath;
-	unsigned int m_RendererID;
+	unsigned int m_RendererId;
 private:
 	unsigned char* m_LocalBuffer;
 	int m_Width, m_Height, m_BPP;
