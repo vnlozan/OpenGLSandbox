@@ -1,33 +1,35 @@
-#include "VertexArray.h"
-#include "VertexBufferLayout.hpp"
 #include "Renderer.h"
-
-VertexArray::VertexArray() {
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include <iostream>
+VertexArray::VertexArray(): m_LastAttribPointer{ 0 } {
 	GLCall( glGenVertexArrays( 1, &m_RendererId ) );
 }
-
 VertexArray::~VertexArray() {
 	GLCall( glDeleteVertexArrays( 1, &m_RendererId ) );
 }
-
 void VertexArray::Bind() const {
 	GLCall( glBindVertexArray( m_RendererId ) );
 }
-
 void VertexArray::Unbind() const {
 	GLCall( glBindVertexArray( 0 ) );
 }
+void VertexArray::AddBuffer( const VertexBuffer& vb ) {
+	std::cout << "Start!" << std::endl;
 
-void VertexArray::AddBuffer( const VertexBuffer& vb, const VertexBufferLayout& layout ) {
 	Bind();
 	vb.Bind();
-	const auto& elements = layout.GetElements();
 	unsigned int offset = 0;
-	for (unsigned int i = 0; i < elements.size(); i++ ) {
-		const auto& element = elements[i];
-		GLCall( glEnableVertexAttribArray( i ) );
-		// (void*)offsetof(Vertex, Normal), offsetof - preprocessor for struct objects
-		GLCall( glVertexAttribPointer( i, element.count, element.type, element.normalized, layout.GetStride(), (const void*)(( __int64 )offset) ) );
-		offset += element.count * VertexBufferElement::GetSizeOfType( element.type );
+	const auto& elements = vb.GetElements();
+	for( const auto& element : elements ) {
+		std::cout << "Attribute : " << m_LastAttribPointer << std::endl;
+		GLCall( glEnableVertexAttribArray( m_LastAttribPointer ) );
+		GLCall( glVertexAttribPointer( m_LastAttribPointer, element.count, element.glType, element.normalized, vb.GetStride(), ( void* )element.offset ) );
+		if( element.isInstanced ) {
+			GLCall( glVertexAttribDivisor( m_LastAttribPointer, element.instanceDivisor ) );
+		}
+		m_LastAttribPointer++;
 	}
+
+	std::cout << "End!" << std::endl;
 }

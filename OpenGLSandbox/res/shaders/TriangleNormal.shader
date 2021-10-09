@@ -24,7 +24,7 @@ void main() {
 layout( triangles ) in;
 layout( line_strip, max_vertices = 2 ) out;
 
-const float MAGNITUDE = 0.2;
+const float MAGNITUDE = 0.05;
 
 in VS_OUT{
     mat4 projection;
@@ -62,5 +62,5 @@ void main() {
 out vec4 FragColor;
 
 void main() {
-    FragColor = vec4( 1.0, 1.0, 0.0, 1.0 );
+    FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
 }

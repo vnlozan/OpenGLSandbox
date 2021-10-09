@@ -3,8 +3,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/glm/gtc/type_ptr.hpp>
 #include "scenes/Scene.hpp"
-#include "_VertexArray.h"
-#include "_VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 #include "UniformBuffer.hpp"
 #include "Shader.h"
 #include "Texture.h"
@@ -78,15 +78,15 @@ namespace Scenes {
 			m_TextureSpecular = std::make_unique<Texture>( "res/textures/container_specular.png" );
 			m_TextureEmissive = std::make_unique<Texture>( "res/textures/container_emission.jpg" );
 
-			m_VBO = std::make_unique<_VertexBuffer>( vertices, sizeof( vertices ) );
+			m_VBO = std::make_unique<VertexBuffer>( vertices, sizeof( vertices ) );
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // position
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // normal
 			m_VBO->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
 
-			m_VAO = std::make_unique<_VertexArray>();
+			m_VAO = std::make_unique<VertexArray>();
 			m_VAO->AddBuffer( *m_VBO );
 
-			m_VAOLight = std::make_unique<_VertexArray>();
+			m_VAOLight = std::make_unique<VertexArray>();
 			m_VAOLight->AddBuffer( *m_VBO );
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/Emission.shader" );
@@ -153,10 +153,10 @@ namespace Scenes {
 			renderer.DrawArrays( *m_VAOLight, 36, *m_ShaderLight );
 		}
 	private:
-		std::unique_ptr<_VertexArray> m_VAO;
-		std::unique_ptr<_VertexArray> m_VAOLight;
+		std::unique_ptr<VertexArray> m_VAO;
+		std::unique_ptr<VertexArray> m_VAOLight;
 		
-		std::unique_ptr<_VertexBuffer> m_VBO;
+		std::unique_ptr<VertexBuffer> m_VBO;
 		
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Shader> m_ShaderLight;

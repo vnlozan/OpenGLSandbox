@@ -4,8 +4,8 @@
 #include "scenes/Scene.hpp"
 #include "Shader.h"
 #include "Texture.h"
-#include "_VertexArray.h"
-#include "_VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 #include <map>
 
 namespace Scenes {
@@ -110,22 +110,22 @@ namespace Scenes {
 			m_TextureVegetation = std::make_unique<Texture>( "res/textures/grass.png", Texture::TYPE::DIFFUSE, GL_CLAMP_TO_BORDER );
 
 
-			m_VBOCube = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_VBOCube = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
-			m_VAOCube = std::make_unique<_VertexArray>();
+			m_VAOCube = std::make_unique<VertexArray>();
 			m_VAOCube->AddBuffer( *m_VBOCube );
 
-			m_VBOPlane = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_VBOPlane = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
-			m_VAOPlane = std::make_unique<_VertexArray>();
+			m_VAOPlane = std::make_unique<VertexArray>();
 			m_VAOPlane->AddBuffer( *m_VBOPlane );
 
-			m_VBOVeget = std::make_unique<_VertexBuffer>( vegetVertices, sizeof( vegetVertices ) );
+			m_VBOVeget = std::make_unique<VertexBuffer>( vegetVertices, sizeof( vegetVertices ) );
 			m_VBOVeget->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOVeget->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
-			m_VAOVeget = std::make_unique<_VertexArray>();
+			m_VAOVeget = std::make_unique<VertexArray>();
 			m_VAOVeget->AddBuffer( *m_VBOVeget );
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/Texture.shader" );
@@ -201,13 +201,13 @@ namespace Scenes {
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderNormal );
 		}
 	private:
-		std::unique_ptr<_VertexArray> m_VAOCube;
-		std::unique_ptr<_VertexArray> m_VAOPlane;
-		std::unique_ptr<_VertexArray> m_VAOVeget;
+		std::unique_ptr<VertexArray> m_VAOCube;
+		std::unique_ptr<VertexArray> m_VAOPlane;
+		std::unique_ptr<VertexArray> m_VAOVeget;
 
-		std::unique_ptr<_VertexBuffer> m_VBOCube;
-		std::unique_ptr<_VertexBuffer> m_VBOPlane;
-		std::unique_ptr<_VertexBuffer> m_VBOVeget;
+		std::unique_ptr<VertexBuffer> m_VBOCube;
+		std::unique_ptr<VertexBuffer> m_VBOPlane;
+		std::unique_ptr<VertexBuffer> m_VBOVeget;
 
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Shader> m_ShaderNormal;

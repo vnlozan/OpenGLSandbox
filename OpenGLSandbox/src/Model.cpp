@@ -26,6 +26,11 @@ void Model::Draw( Renderer& render, Shader& shader ) {
 		mesh.Draw( render, shader );
 	}
 }
+void Model::DrawInstanced( Renderer& render, Shader& shader, int instancesCount ) {
+    for( Mesh& mesh : m_Meshes ) {
+        mesh.DrawInstanced( render, shader, instancesCount );
+    }
+}
 // Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
 void Model::loadModel( std::string const& path ) {
     Assimp::Importer importer;

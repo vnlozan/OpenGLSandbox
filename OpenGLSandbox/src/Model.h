@@ -20,16 +20,20 @@ public:
     Model();
     Model( std::string const& path, bool gamma = false );
     void Draw( Renderer& render, Shader& shader );
+    void DrawInstanced( Renderer& render, Shader& shader, int instancesCount );
+    //inline auto Meshes() const { return m_Meshes.data(); }
 private:
     void loadModel( std::string const& path );
     void processNode( aiNode* node, const aiScene* scene );
     Mesh processMesh( aiMesh* mesh, const aiScene* scene );
-    std::vector<Texture> loadMaterialTextures( aiMaterial* mat, aiTextureType aiType, Texture::TYPE type );
     void loadMaterialTextures( aiMaterial* mat, aiTextureType aiType, Texture::TYPE type, std::vector<Texture>& outTextures );
+
 public:
-    std::vector<Texture>    m_TexturesLoaded;
-    std::unordered_map<std::string, Texture*> m_TLoaded;
     std::vector<Mesh>       m_Meshes;
+private:
+    std::vector<Texture>    m_TexturesLoaded;
     std::string             m_Directory;
     bool                    m_GammaCorrection;
+
+    std::unordered_map<std::string, Texture*> m_TLoaded;
 };

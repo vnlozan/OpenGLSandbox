@@ -1,16 +1,15 @@
 #pragma once
-#include "VertexBuffer.h"
 
-class VertexBufferLayout;
+class VertexBuffer;
 
 class VertexArray {
 private:
 	unsigned int m_RendererId;
+	unsigned int m_LastAttribPointer;
 public:
 	VertexArray();
 	~VertexArray();
-
 	void Bind() const;
 	void Unbind() const;
-	void AddBuffer( const VertexBuffer&, const VertexBufferLayout& );
+	void AddBuffer( const VertexBuffer& vb );
 };

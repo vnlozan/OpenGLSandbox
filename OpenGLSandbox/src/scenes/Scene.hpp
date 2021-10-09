@@ -65,7 +65,7 @@ namespace Scenes {
 				scene->m_UnhandledKeys.emplace( key, scancode, action, modes );
 			} );
 		}
-		/* Is called by Application object. All the rendering should be here. */
+		/* Is called by Application object. All the physics should be here. */
 		virtual void OnUpdate( float deltaTime ) {
 			ProcessControls( deltaTime );
 		}

@@ -1,8 +1,7 @@
 #include <iostream>
-
+#include "Texture.h"
 #include "stb_image/stb_image.h"
 
-#include "Texture.h"
 /* params: GL_REPEAT, GL_CLAMP_TO_EDGE */
 Texture::Texture( const char* path, Texture::TYPE type, int params )
 	: m_RendererId{ 0 }, type{ type }, m_FilePath{ path }, m_LocalBuffer{ nullptr }, m_Height{ 0 }, m_Width{ 0 } {

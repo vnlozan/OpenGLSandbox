@@ -16,6 +16,7 @@ out vec4 FragColor;
 
 in vec2 TexCoords;
 
+uniform int u_Mode;
 uniform sampler2D u_ScreenTexture;
 
 vec3 Inversion( sampler2D map, vec2 texCoords ) {
@@ -116,9 +117,11 @@ vec3 EdgeDetection( sampler2D map, vec2 texCoords ) {
 }
 
 void main() {
-    //FragColor = vec4( Inversion( u_ScreenTexture, TexCoords ), 1.0 );
-    //FragColor = vec4( Grayscale( u_ScreenTexture, TexCoords ), 1.0 );
-    //FragColor = vec4( SharpenKernel( u_ScreenTexture, TexCoords ), 1.0 );
-    //FragColor = vec4( Blur( u_ScreenTexture, TexCoords ), 1.0 );
-    FragColor = vec4( Inversion( u_ScreenTexture, TexCoords ), 1.0 );
+    switch( u_Mode ) {
+        case 1: FragColor = vec4( Inversion( u_ScreenTexture, TexCoords ), 1.0 ); break;
+        case 2: FragColor = vec4( Grayscale( u_ScreenTexture, TexCoords ), 1.0 ); break;
+        case 3: FragColor = vec4( SharpenKernel( u_ScreenTexture, TexCoords ), 1.0 ); break;
+        case 4: FragColor = vec4( Blur( u_ScreenTexture, TexCoords ), 1.0 ); break;
+        default: FragColor = vec4( texture( u_ScreenTexture, TexCoords ).rgb, 1.0 ); break;
+    }
 }

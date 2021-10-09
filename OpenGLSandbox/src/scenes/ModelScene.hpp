@@ -8,11 +8,11 @@ namespace Scenes {
 
 	class ModelScene: public Scene {
 	public:
-		ModelScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window } {}
+		ModelScene( GLuint width, GLuint height, GLFWwindow* window )
+			: Scene{ width, height, window }, m_DrawVerticesNormals{ false }, m_DrawTriangleNormals{ false }, m_WireframeModeEnabled{ false } {}
 		virtual ~ModelScene() override {}
 		virtual void OnStart( Renderer& renderer ) override {
 			Scene::OnStart( renderer );
-			renderer.EnableFaceCull();
 			glfwSetInputMode( m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 			m_KeyFunctions[GLFW_KEY_SPACE] = [this] {
 				m_ControlsEnabled = !m_ControlsEnabled;
@@ -27,11 +27,11 @@ namespace Scenes {
 			};	
 			m_Model = std::make_unique<Model>( "res/models/backpack/backpack.obj" );
 
-			//m_ShaderVertexNormal = std::make_unique<Shader>( "res/shaders/VertexNormal.shader" );
-			//m_ShaderPrimitiveNormal = std::make_unique<Shader>( "res/shaders/PrimitiveNormal.shader" );
-			m_Shader = std::make_unique<Shader>( "res/shaders/Model.shader" );
-			//m_Shader = std::make_unique<Shader>( "res/shaders/Explosion_g.shader" );
+			m_ShaderVertexNormal = std::make_unique<Shader>( "res/shaders/VertexNormal.shader" );
+			m_ShaderTriangleNormal = std::make_unique<Shader>( "res/shaders/TriangleNormal.shader" );
+			m_ShaderTexture = std::make_unique<Shader>( "res/shaders/Model.shader" );
 
+			renderer.EnableFaceCull();
 		}
 		virtual void OnImGuiRender() override {
 			Scene::OnImGuiRender();
@@ -39,6 +39,22 @@ namespace Scenes {
 				ImGui::Begin( "Info" );
 				ImGui::Text( "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate );
 				ImGui::Text( "Camera Position : %.3f / %.3f / %.3f", m_Camera.Position.r, m_Camera.Position.g, m_Camera.Position.b );
+				ImGui::End();
+			}
+			{
+				ImGui::Begin( "Settings" );
+				ImGui::Text( "Rendering" );
+				bool mode = m_WireframeModeEnabled;
+				ImGui::Checkbox( "Wireframe mode", &m_WireframeModeEnabled );
+				if( mode != m_WireframeModeEnabled ) {
+					if( m_WireframeModeEnabled ) {
+						glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+					} else {
+						glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+					}
+				}
+				ImGui::Checkbox( "Draw primitives normals", &m_DrawTriangleNormals ); //ImGui::SameLine();
+				ImGui::Checkbox( "Draw vertices normals", &m_DrawVerticesNormals ); //ImGui::SameLine();
 				ImGui::End();
 			}
 		}
@@ -50,31 +66,33 @@ namespace Scenes {
 			model = glm::scale( model, glm::vec3( 1.0f, 1.0f, 1.0f ) );	// it's a bit too big for our scene, so scale it down
 			glm::mat4 mvp = projection * view * model;
 
-			m_Shader->Bind();
-			m_Shader->SetUniformMat4f( "u_MVP", mvp );
-			//m_Shader->SetUniform1f( "u_Time", glfwGetTime() );
-			m_Model->Draw( renderer, *m_Shader );
+			m_ShaderTexture->Bind();
+			m_ShaderTexture->SetUniformMat4f( "u_MVP", mvp );
+			m_Model->Draw( renderer, *m_ShaderTexture );
 
-			//m_ShaderVertexNormal->Bind();
-			//m_ShaderVertexNormal->SetUniformMat4f( "u_MV", view * model );
-			//m_ShaderVertexNormal->SetUniformMat4f( "u_Projection", projection );
-			//m_Model->Draw( renderer, *m_ShaderVertexNormal );
-			//m_ShaderPrimitiveNormal->Bind();
-			//m_ShaderPrimitiveNormal->SetUniformMat4f( "u_MVP", mvp );
-			//m_Model->Draw( renderer, *m_ShaderPrimitiveNormal );
-		}
-		void SetWireframeMode( bool enable = true ) {
-			if( enable ) {
-				glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-				return;
+			if( m_DrawTriangleNormals ) {
+				m_ShaderTriangleNormal->Bind();
+				m_ShaderTriangleNormal->SetUniformMat4f( "u_Model", model );
+				m_ShaderTriangleNormal->SetUniformMat4f( "u_View", view );
+				m_ShaderTriangleNormal->SetUniformMat4f( "u_Projection", projection );
+				m_Model->Draw( renderer, *m_ShaderTriangleNormal );
 			}
-			glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+			if( m_DrawVerticesNormals ) {
+				m_ShaderVertexNormal->Bind();
+				m_ShaderVertexNormal->SetUniformMat4f( "u_MV", view * model );
+				m_ShaderVertexNormal->SetUniformMat4f( "u_Projection", projection );
+				m_Model->Draw( renderer, *m_ShaderVertexNormal );
+			}
 		}
 	private:
 		std::unique_ptr<Model> m_Model;
 
-		std::unique_ptr<Shader> m_Shader;
+		std::unique_ptr<Shader> m_ShaderTexture;
 		std::unique_ptr<Shader> m_ShaderVertexNormal;
 		std::unique_ptr<Shader> m_ShaderTriangleNormal;
+
+		bool m_DrawTriangleNormals;
+		bool m_DrawVerticesNormals;
+		bool m_WireframeModeEnabled;
 	};
 }

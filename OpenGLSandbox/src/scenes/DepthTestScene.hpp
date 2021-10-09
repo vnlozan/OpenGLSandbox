@@ -2,8 +2,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "scenes/Scene.hpp"
-#include "_VertexArray.h"
-#include "_VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -82,16 +82,16 @@ namespace Scenes {
 				5.0f, -0.5f, -5.0f, 2.0f, 2.0f
 			};
 
-			m_CubeVBO = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_CubeVBO = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
 			m_CubeVBO->AddLayoutElement( GL_FLOAT, 3 );
 			m_CubeVBO->AddLayoutElement( GL_FLOAT, 2 );
-			m_CubeVAO = std::make_unique<_VertexArray>();
+			m_CubeVAO = std::make_unique<VertexArray>();
 			m_CubeVAO->AddBuffer( *m_CubeVBO );
 
-			m_PlaneVBO = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_PlaneVBO = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_PlaneVBO->AddLayoutElement( GL_FLOAT, 3 );
 			m_PlaneVBO->AddLayoutElement( GL_FLOAT, 2 );
-			m_PlaneVAO = std::make_unique<_VertexArray>();
+			m_PlaneVAO = std::make_unique<VertexArray>();
 			m_PlaneVAO->AddBuffer( *m_PlaneVBO );
 			
 			m_Shader = std::make_unique<Shader>( "res/shaders/Depth.shader" );
@@ -129,11 +129,11 @@ namespace Scenes {
 			renderer.DrawArrays( *m_PlaneVAO, 36, *m_Shader );
 		}
 	private:
-		std::unique_ptr<_VertexArray> m_CubeVAO;
-		std::unique_ptr<_VertexArray> m_PlaneVAO;
+		std::unique_ptr<VertexArray> m_CubeVAO;
+		std::unique_ptr<VertexArray> m_PlaneVAO;
 
-		std::unique_ptr<_VertexBuffer> m_CubeVBO;
-		std::unique_ptr<_VertexBuffer> m_PlaneVBO;
+		std::unique_ptr<VertexBuffer> m_CubeVBO;
+		std::unique_ptr<VertexBuffer> m_PlaneVBO;
 
 		std::unique_ptr<Shader> m_Shader;
 	};

@@ -4,8 +4,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include "scenes/Scene.hpp"
-#include "_VertexArray.h"
-#include "_VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 #include "Shader.h"
 #include "Texture.h"
 #include <glm/glm/gtc/type_ptr.hpp>
@@ -53,7 +53,7 @@ namespace Scenes {
 				0.05f, 0.05f, 0.0f, 1.0f, 1.0f
 			};
 
-			m_VBO_PosColor = std::make_unique<_VertexBuffer>( quadVertices, sizeof( quadVertices ) );
+			m_VBO_PosColor = std::make_unique<VertexBuffer>( quadVertices, sizeof( quadVertices ) );
 			m_VBO_PosColor->AddLayoutElement( GL_FLOAT, 2 ); // add position
 			m_VBO_PosColor->AddLayoutElement( GL_FLOAT, 3 ); // add color
 
@@ -84,7 +84,7 @@ namespace Scenes {
 	private:
 		void ConfigureSettings() {
 			if( m_InstanceType == 0 ) {
-				m_VAO = std::make_unique<_VertexArray>();
+				m_VAO = std::make_unique<VertexArray>();
 				m_VAO->AddBuffer( *m_VBO_PosColor );
 				
 				m_Shader = std::make_unique<Shader>( "res/shaders/InstancingBasic.shader" );
@@ -94,9 +94,9 @@ namespace Scenes {
 				}
 				return;
 			}
-			m_VAO = std::make_unique<_VertexArray>();
+			m_VAO = std::make_unique<VertexArray>();
 			m_VAO->AddBuffer( *m_VBO_PosColor );
-			m_VBO_Offset = std::make_unique<_VertexBuffer>( m_Translations, sizeof( m_Translations ) );
+			m_VBO_Offset = std::make_unique<VertexBuffer>( m_Translations, sizeof( m_Translations ) );
 			m_VBO_Offset->AddLayoutElement( GL_FLOAT, 2, GL_FALSE, true, 1 ); // add offset
 			m_VAO->AddBuffer( *m_VBO_Offset );
 
@@ -105,9 +105,9 @@ namespace Scenes {
 		}
 	private:
 		glm::vec2 m_Translations[100];
-		std::unique_ptr<_VertexBuffer> m_VBO_PosColor;
-		std::unique_ptr<_VertexBuffer> m_VBO_Offset;
-		std::unique_ptr<_VertexArray> m_VAO;
+		std::unique_ptr<VertexBuffer> m_VBO_PosColor;
+		std::unique_ptr<VertexBuffer> m_VBO_Offset;
+		std::unique_ptr<VertexArray> m_VAO;
 		std::unique_ptr<Shader> m_Shader;
 		int m_InstanceType;
 	};

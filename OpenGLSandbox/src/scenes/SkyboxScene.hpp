@@ -3,8 +3,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "scenes/Scene.hpp"
-#include "_VertexArray.h"
-#include "_VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 #include "FrameBuffer.h"
 #include "RenderBuffer.h"
 #include "Cubemap.hpp"
@@ -144,24 +144,24 @@ namespace Scenes {
 			m_TexturePlane = std::make_unique<Texture>( "res/textures/metal.png" );
 			m_Cubemap = std::make_unique<Cubemap>( faces );
 
-			m_VBOSkybox = std::make_unique<_VertexBuffer>( skyboxVertices, sizeof( skyboxVertices ) );
+			m_VBOSkybox = std::make_unique<VertexBuffer>( skyboxVertices, sizeof( skyboxVertices ) );
 			m_VBOSkybox->AddLayoutElement( GL_FLOAT, 3 );
-			m_VAOSkybox = std::make_unique<_VertexArray>();
+			m_VAOSkybox = std::make_unique<VertexArray>();
 			m_VAOSkybox->AddBuffer( *m_VBOSkybox );
 
-			m_VBOCube = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_VBOCube = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 );
-			m_VAOCube = std::make_unique<_VertexArray>();
+			m_VAOCube = std::make_unique<VertexArray>();
 			m_VAOCube->AddBuffer( *m_VBOCube );
 
-			m_VBOPlane = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_VBOPlane = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 3 );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 2 );
-			m_VAOPlane = std::make_unique<_VertexArray>();
+			m_VAOPlane = std::make_unique<VertexArray>();
 			m_VAOPlane->AddBuffer( *m_VBOPlane );
 
-			m_Shader = std::make_unique<Shader>( "res/shaders/Reflection.shader" );
+			m_Shader = std::make_unique<Shader>( "res/shaders/EnvironmentMapping.shader" );
 			m_Shader->Bind();
 			m_Shader->SetUniform1i( "u_Skybox", 0 );
 
@@ -184,7 +184,6 @@ namespace Scenes {
 				ImGui::RadioButton( "Refraction", &m_EnvironmentMappingMode, 2 ); ImGui::SameLine();
 				ImGui::RadioButton( "Red color", &m_EnvironmentMappingMode, 3 ); ImGui::SameLine();
 				if( state != m_EnvironmentMappingMode ) {
-					m_Shader = std::make_unique<Shader>( "res/shaders/Reflection.shader" );
 					m_Shader->Bind();
 					m_Shader->SetUniform1i( "u_Mode", m_EnvironmentMappingMode );
 				}
@@ -224,13 +223,13 @@ namespace Scenes {
 			glDepthFunc( GL_LESS ); // set depth function back to default
 		}
 	private:
-		std::unique_ptr<_VertexArray> m_VAOCube;
-		std::unique_ptr<_VertexArray> m_VAOPlane;
-		std::unique_ptr<_VertexArray> m_VAOSkybox;
+		std::unique_ptr<VertexArray> m_VAOCube;
+		std::unique_ptr<VertexArray> m_VAOPlane;
+		std::unique_ptr<VertexArray> m_VAOSkybox;
 
-		std::unique_ptr<_VertexBuffer> m_VBOCube;
-		std::unique_ptr<_VertexBuffer> m_VBOPlane;
-		std::unique_ptr<_VertexBuffer> m_VBOSkybox;
+		std::unique_ptr<VertexBuffer> m_VBOCube;
+		std::unique_ptr<VertexBuffer> m_VBOPlane;
+		std::unique_ptr<VertexBuffer> m_VBOSkybox;
 
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Shader> m_ShaderScreen;

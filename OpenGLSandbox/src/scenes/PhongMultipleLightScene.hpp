@@ -3,8 +3,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "scenes/Scene.hpp"
-#include "_VertexArray.h"
-#include "_VertexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
 #include "Shader.h"
 #include "Texture.h"
 
@@ -92,9 +92,9 @@ namespace Scenes {
 			m_PointLightPositions.emplace_back( glm::vec3( -4.0f, 2.0f, -12.0f ) );
 			m_PointLightPositions.emplace_back( glm::vec3( 0.0f, 0.0f, -3.0f ) );
 
-			m_VAO = std::make_unique<_VertexArray>();
+			m_VAO = std::make_unique<VertexArray>();
 
-			m_VBO = std::make_unique<_VertexBuffer>( vertices, sizeof( vertices ) );
+			m_VBO = std::make_unique<VertexBuffer>( vertices, sizeof( vertices ) );
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // normals
 			m_VBO->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
@@ -109,7 +109,7 @@ namespace Scenes {
 			m_Shader->SetUniform1i( "u_Material.diffuse", 0 );
 			m_Shader->SetUniform1i( "u_Material.specular", 1 );
 
-			m_VAOLight = std::make_unique<_VertexArray>();
+			m_VAOLight = std::make_unique<VertexArray>();
 			m_VAOLight->AddBuffer( *m_VBO );
 
 			m_ShaderLight = std::make_unique<Shader>( "res/shaders/Color.shader" );
@@ -195,10 +195,10 @@ namespace Scenes {
 			}
 		}
 	private:
-		std::unique_ptr<_VertexBuffer> m_VBO;
+		std::unique_ptr<VertexBuffer> m_VBO;
 
-		std::unique_ptr<_VertexArray> m_VAOLight;
-		std::unique_ptr<_VertexArray> m_VAO;
+		std::unique_ptr<VertexArray> m_VAOLight;
+		std::unique_ptr<VertexArray> m_VAO;
 		
 		std::unique_ptr<Texture> m_TextureDiffuse;
 		std::unique_ptr<Texture> m_TextureSpecular;
