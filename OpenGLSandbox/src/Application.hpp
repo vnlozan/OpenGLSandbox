@@ -27,27 +27,35 @@ public:
 		if( !glfwInit() ) {
 			return -1;
 		}
-		
 		glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
 		glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
 		glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
-		glfwWindowHint( GLFW_RESIZABLE, GL_FALSE );
+		glfwWindowHint( GLFW_SAMPLES, 4 ); /* GLFW MSAA Enable */
 
 		m_Window = glfwCreateWindow( m_Width, m_Height, m_WindowTitle.c_str(), NULL, NULL );
 		if( !m_Window ) {
 			glfwTerminate();
 			return -1;
 		}
-
 		glfwMakeContextCurrent( m_Window );
-		glfwSwapInterval( 1 ); // Vertical synchronization
+
+		/* Vertical synchronization Enable */
+		glfwSwapInterval( 1 );
+
 
 		if( !gladLoadGLLoader( ( GLADloadproc ) glfwGetProcAddress ) ) {
 			std::cout << "Glad Error" << std::endl;
 			return -1;
 		}
 
-		glViewport( 0, 0, m_Width, m_Height );
+		m_Renderer->EnableMSAA( true );
+		m_Renderer->EnableGammaCorrection( true );
+
+		/* Resizable window */
+		glfwWindowHint( GLFW_RESIZABLE, GL_TRUE );
+		glfwSetFramebufferSizeCallback( m_Window, [] ( GLFWwindow* window, int width, int height ) {
+			glViewport( 0, 0, width, height );
+		} );
 
 		SetDefaults();
 
@@ -58,37 +66,41 @@ public:
 	void PlayLoop() {
 		float deltaTime = 0.0f;
 		float lastFrame = 0.0f;
+		float maxPeriod = 1.0f / 60.0f;
 
 		StartImGui();
 		
 		while( !glfwWindowShouldClose( m_Window ) ) {
-			glfwPollEvents();
-
-			m_Renderer->Clear();
-
+			
 			float currentFrame = glfwGetTime();
 			deltaTime = currentFrame - lastFrame;
-			lastFrame = currentFrame;
 
+			if( deltaTime >= maxPeriod ) {
+				lastFrame = currentFrame;
 
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+				glfwPollEvents();
 
-			m_CurrentScene->OnUpdate( deltaTime );
-			m_CurrentScene->OnRender( *m_Renderer );
-			m_CurrentScene->OnImGuiRender();
+				m_Renderer->Clear();
 
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
 
-			glfwSwapBuffers( m_Window );
+				m_CurrentScene->OnUpdate( deltaTime );
+				m_CurrentScene->OnRender( *m_Renderer );
+				m_CurrentScene->OnImGuiRender();
+
+				ImGui::Render();
+				ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+
+				glfwSwapBuffers( m_Window );
+			}
 		}
 		
 		delete m_CurrentScene;
 		
 		ShutDownImGui();
-		
+
 		glfwTerminate();
 	}
 private:

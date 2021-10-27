@@ -2,21 +2,18 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-
-#include "scenes/Scene.hpp"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "Shader.h"
-#include "Texture.h"
 #include <glm/glm/gtc/type_ptr.hpp>
 
-#include "Model.h"
+#include "scenes/Scene.hpp"
+
+#include "Shader.h"
+#include "_Model.h"
 
 namespace Scenes {
-	class InstancingAsteroids: public Scene {
+	class InstancedAsteroids: public Scene {
 	public:
-		InstancingAsteroids( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window } {}
-		virtual ~InstancingAsteroids() override {}
+		InstancedAsteroids( GLuint width, GLuint height, GLFWwindow* window ): Scene{ width, height, window }, m_AsteroidsAmount{ 100000 } {}
+		virtual ~InstancedAsteroids() override {}
 		virtual void OnStart( Renderer& renderer ) override {
 			Scene::OnStart( renderer );
 
@@ -43,6 +40,7 @@ namespace Scenes {
 			float offset = 25.0f;
 			for( unsigned int i = 0; i < m_AsteroidsAmount; i++ )     {
 				glm::mat4 model = glm::mat4( 1.0f );
+
 				// 1. translation: displace along circle with 'radius' in range [-offset, offset]
 				float angle = ( float ) i / ( float ) m_AsteroidsAmount * 360.0f;
 				float displacement = ( rand() % ( int ) ( 2 * offset * 100 ) ) / 100.0f - offset;
@@ -101,20 +99,19 @@ namespace Scenes {
 			m_ShaderPlanet->SetUniformMat4f( "u_Projection", projection );
 			m_ShaderPlanet->SetUniformMat4f( "u_View", view );
 			m_ShaderPlanet->SetUniformMat4f( "u_Model", model );
-			m_ShaderPlanet->SetUniform1f( "u_Angle", ( float ) glfwGetTime() * glm::radians( 30.0f ) );
-
+			m_ShaderPlanet->SetUniform1f( "u_AngularVelocity", ( float ) glfwGetTime() * glm::radians( 360.0f ) / 5.0f ); // rad/sec
 			m_ModelPlanet->Draw( renderer, *m_ShaderPlanet );
 
 			m_ShaderAsteroid->Bind();
 			m_ShaderAsteroid->SetUniformMat4f( "u_Projection", projection );
-			m_ShaderPlanet->SetUniform1f( "u_Angle", ( float ) glfwGetTime() * glm::radians( 30.0f ) );
+			m_ShaderAsteroid->SetUniform1f( "u_Angle", ( float ) glfwGetTime() * glm::radians( 30.0f ) );
 			m_ShaderAsteroid->SetUniformMat4f( "u_View", view );
 			m_ModelAsteroid->DrawInstanced( renderer, *m_ShaderAsteroid, m_AsteroidsAmount );
 		}
 	private:
 		std::unique_ptr<VertexBuffer> m_VBO;
 
-		unsigned int m_AsteroidsAmount = 100000;
+		unsigned int m_AsteroidsAmount;
 		glm::mat4* m_ModelMatrices;
 
 		std::unique_ptr<Shader> m_ShaderPlanet;

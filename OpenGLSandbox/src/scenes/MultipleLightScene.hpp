@@ -1,19 +1,24 @@
 #include <memory>
 #include <string>
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
 #include "scenes/Scene.hpp"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
+
 #include "Shader.h"
-#include "Texture.h"
+
+#include "_VertexArray.h"
+#include "_Buffer.h"
+#include "_Texture.h"
 
 namespace Scenes {
 
-	class PhongMultipleLightScene: public Scene {
+	class MultipleLightScene: public Scene {
 	public:
-		PhongMultipleLightScene( GLuint width, GLuint height, GLFWwindow* window ) : Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) } {}
-		virtual ~PhongMultipleLightScene() override {}
+		MultipleLightScene( GLuint width, GLuint height, GLFWwindow* window )
+			: Scene{ width, height, window }, m_LightPos{ glm::vec3( 1.2f, 1.0f, 2.0f ) }, m_BlinnEnabled{ false } {}
+		virtual ~MultipleLightScene() override {}
 		virtual void OnStart( Renderer& renderer ) override {
 			Scene::OnStart( renderer );
 
@@ -92,24 +97,25 @@ namespace Scenes {
 			m_PointLightPositions.emplace_back( glm::vec3( -4.0f, 2.0f, -12.0f ) );
 			m_PointLightPositions.emplace_back( glm::vec3( 0.0f, 0.0f, -3.0f ) );
 
-			m_VAO = std::make_unique<VertexArray>();
+			m_VAO = std::make_unique<_VertexArray>();
 
-			m_VBO = std::make_unique<VertexBuffer>( vertices, sizeof( vertices ) );
+			m_VBO = std::make_unique<_VertexBuffer>( vertices, sizeof( vertices ) );
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // normals
 			m_VBO->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
 
 			m_VAO->AddBuffer( *m_VBO );
 
-			m_TextureDiffuse = std::make_unique<Texture>( "res/textures/container_diffuse.png" );
-			m_TextureSpecular = std::make_unique<Texture>( "res/textures/container_specular.png" );
+			m_TextureDiffuse = std::make_unique<_Texture2D>( "res/textures/container_diffuse.png", _Texture2D::TYPE::DIFFUSE, true );
+			m_TextureSpecular = std::make_unique<_Texture2D>( "res/textures/container_specular.png", _Texture2D::TYPE::SPECULAR, true );
 
-			m_Shader = std::make_unique<Shader>( "res/shaders/PhongMultipleLight.shader" );
+			m_Shader = std::make_unique<Shader>( "res/shaders/MultipleLight.shader" );
 			m_Shader->Bind();
+			m_Shader->SetUniform1i( "u_Blinn", m_BlinnEnabled );
 			m_Shader->SetUniform1i( "u_Material.diffuse", 0 );
 			m_Shader->SetUniform1i( "u_Material.specular", 1 );
 
-			m_VAOLight = std::make_unique<VertexArray>();
+			m_VAOLight = std::make_unique<_VertexArray>();
 			m_VAOLight->AddBuffer( *m_VBO );
 
 			m_ShaderLight = std::make_unique<Shader>( "res/shaders/Color.shader" );
@@ -121,6 +127,17 @@ namespace Scenes {
 			{
 				ImGui::Begin( "Info" );
 				ImGui::Text( "Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate );
+				ImGui::End();
+			}
+			{
+				ImGui::Begin( "Settings" );
+				int state = m_BlinnEnabled;
+				ImGui::RadioButton( "Phong", &m_BlinnEnabled, 0 ); ImGui::SameLine();
+				ImGui::RadioButton( "Blinn-Phong", &m_BlinnEnabled, 1 ); ImGui::SameLine();
+				if( state != m_BlinnEnabled ) {
+					m_Shader->Bind();
+					m_Shader->SetUniform1i( "u_Blinn", m_BlinnEnabled );
+				}
 				ImGui::End();
 			}
 		}
@@ -195,13 +212,13 @@ namespace Scenes {
 			}
 		}
 	private:
-		std::unique_ptr<VertexBuffer> m_VBO;
+		std::unique_ptr<_VertexBuffer> m_VBO;
 
-		std::unique_ptr<VertexArray> m_VAOLight;
-		std::unique_ptr<VertexArray> m_VAO;
+		std::unique_ptr<_VertexArray> m_VAOLight;
+		std::unique_ptr<_VertexArray> m_VAO;
 		
-		std::unique_ptr<Texture> m_TextureDiffuse;
-		std::unique_ptr<Texture> m_TextureSpecular;
+		std::unique_ptr<_Texture2D> m_TextureDiffuse;
+		std::unique_ptr<_Texture2D> m_TextureSpecular;
 
 		std::unique_ptr<Shader> m_ShaderLight;
 		std::unique_ptr<Shader> m_Shader;
@@ -210,5 +227,7 @@ namespace Scenes {
 
 		std::vector<glm::vec3> m_CubePositions;
 		std::vector<glm::vec3> m_PointLightPositions;
+
+		int m_BlinnEnabled = 0;
 	};
 }

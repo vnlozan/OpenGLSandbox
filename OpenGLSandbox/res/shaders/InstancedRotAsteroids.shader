@@ -26,8 +26,9 @@ mat4 rotationMatrix( vec3 axis, float angle ) {
 
 void main() {
     TexCoords = aTexCoords;
-    mat4 rotation = rotationMatrix( vec3( 0.0f, 1.0f, 0.0f ), u_Angle );
-    gl_Position = u_Projection * u_View * rotation * aInstanceMatrix * vec4( aPos, 1.0f ); // Multiplication from the left
+    mat4 rotMat = rotationMatrix( vec3( 0.0f, 1.0f, 0.0f ), u_Angle ); // object rotation in world coords
+    mat4 rotMat2 = rotationMatrix( vec3( 0.0f, 0.0f, 1.0f ), u_Angle ); // object rotation in self coords
+    gl_Position = u_Projection * u_View * rotMat * aInstanceMatrix * rotMat2 * vec4( aPos, 1.0f ); // Multiplication from the left
 }
 
 #shader fragment

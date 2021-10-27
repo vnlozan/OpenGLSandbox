@@ -67,27 +67,41 @@ uniform DirectionLight  u_DirectionLight;
 uniform PointLight      u_PointLights[NR_POINT_LIGHTS];
 uniform SpotLight       u_SpotLight;
 uniform Material        u_Material;
+uniform bool            u_Blinn;
 
-vec3 ProcessDirectionLight( DirectionLight light, vec3 normal, vec3 viewDir, vec3 matDiffuse, vec3 matSpecular ) {
+vec3 ProcessDirectionalLight( bool Blinn, DirectionLight light, vec3 normal, vec3 viewDir, vec3 matDiffuse, vec3 matSpecular ) {
     vec3 lightDir = normalize( -light.direction );
     // diffuse
     float diff = max( dot( normal, lightDir ), 0.0 );
     // specular
-    vec3 reflectDir = reflect( -lightDir, normal );
-    float spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), u_Material.shininess );
+    float spec = 0.0;
+    if( Blinn ) {
+        vec3 halfwayDir = normalize( lightDir + viewDir );
+        spec = pow( max( dot( normal, halfwayDir ), 0.0 ), u_Material.shininess );
+    } else {
+        vec3 reflectDir = reflect( -lightDir, normal );
+        spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), u_Material.shininess );
+    }
 
     vec3 ambient = light.ambient * matDiffuse;
     vec3 diffuse = light.diffuse * diff * matDiffuse;
     vec3 specular = light.specular * spec * matSpecular;
     return ( ambient + diffuse + specular );
 }
-vec3 ProcessPointLight( PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 matDiffuse, vec3 matSpecular ) {
+vec3 ProcessPointLight( bool Blinn, PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 matDiffuse, vec3 matSpecular ) {
     vec3 lightDir = normalize( light.position - fragPos );
     // diffuse
     float diff = max( dot( normal, lightDir ), 0.0 );
     // specular
-    vec3 reflectDir = reflect( -lightDir, normal );
-    float spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), u_Material.shininess );
+    float spec = 0.0;
+    if( Blinn ) {
+        vec3 halfwayDir = normalize( lightDir + viewDir );
+        spec = pow( max( dot( normal, halfwayDir ), 0.0 ), u_Material.shininess );
+    } else {
+        vec3 reflectDir = reflect( -lightDir, normal );
+        spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), u_Material.shininess );
+    }
+
     // attenuation
     float distance = length( light.position - fragPos );
     float attenuation = 1.0 / ( light.constant + light.linear * distance + light.quadratic * ( distance * distance ) );
@@ -101,13 +115,20 @@ vec3 ProcessPointLight( PointLight light, vec3 normal, vec3 fragPos, vec3 viewDi
     specular *= attenuation;
     return ( ambient + diffuse + specular );
 }
-vec3 ProcessSpotLight( SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 matDiffuse, vec3 matSpecular ) {
+vec3 ProcessSpotLight( bool Blinn, SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 matDiffuse, vec3 matSpecular ) {
     vec3 lightDir = normalize( light.position - fragPos );
     // diffuse shading
     float diff = max( dot( normal, lightDir ), 0.0 );
     // specular shading
-    vec3 reflectDir = reflect( -lightDir, normal );
-    float spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), u_Material.shininess );
+    float spec = 0.0;
+    if( Blinn ) {
+        vec3 halfwayDir = normalize( lightDir + viewDir );
+        spec = pow( max( dot( normal, halfwayDir ), 0.0 ), u_Material.shininess );
+    } else {
+        vec3 reflectDir = reflect( -lightDir, normal );
+        spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), u_Material.shininess );
+    }
+
     // attenuation
     float distance = length( light.position - fragPos );
     float attenuation = 1.0 / ( light.constant + light.linear * distance + light.quadratic * ( distance * distance ) );
@@ -133,13 +154,13 @@ void main() {
     vec3 matDiffuse = vec3( texture( u_Material.diffuse, TexCoords ) );
     vec3 matSpecular = vec3( texture( u_Material.specular, TexCoords ) );
 
-    vec3 result = ProcessDirectionLight( u_DirectionLight, norm, viewDir, matDiffuse, matSpecular );
+    vec3 result = ProcessDirectionalLight( u_Blinn, u_DirectionLight, norm, viewDir, matDiffuse, matSpecular );
 
     for( int i = 0; i < NR_POINT_LIGHTS; i++ ) {
-        result += ProcessPointLight( u_PointLights[i], norm, FragPos, viewDir, matDiffuse, matSpecular );
+        result += ProcessPointLight( u_Blinn, u_PointLights[i], norm, FragPos, viewDir, matDiffuse, matSpecular );
     }
 
-    result += ProcessSpotLight( u_SpotLight, norm, FragPos, viewDir, matDiffuse, matSpecular );
+    result += ProcessSpotLight( u_Blinn, u_SpotLight, norm, FragPos, viewDir, matDiffuse, matSpecular );
 
     FragColor = vec4( result, 1.0 );
 }

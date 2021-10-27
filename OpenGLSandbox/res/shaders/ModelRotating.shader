@@ -13,7 +13,7 @@ uniform mat4 u_Projection;
 uniform mat4 u_View;
 uniform mat4 u_Model;
 uniform mat4 u_Rotation;
-uniform float u_Angle;
+uniform float u_AngularVelocity;
 
 mat4 rotationMatrix( vec3 axis, float angle ) {
     axis = normalize( axis );
@@ -28,16 +28,15 @@ mat4 rotationMatrix( vec3 axis, float angle ) {
 }
 
 void main() {
-    mat4 rotation = rotationMatrix( vec3( 0.0f, 1.0f, 0.0f ), u_Angle );
-    //gl_Position = u_Projection * u_View * u_Model * u_Rotation * vec4( aPos, 1.0f );
-    gl_Position = u_Projection * u_View * u_Model * rotation * vec4( aPos, 1.0f );
+    mat4 matRot = rotationMatrix( vec3( 0.0f, 1.0f, 0.0f ), u_AngularVelocity );
+    gl_Position = u_Projection * u_View * u_Model * matRot * vec4( aPos, 1.0f );
     TexCoords = aTexCoords;
 }
 
 #shader fragment
 #version 330 core
-out vec4 FragColor;
 
+out vec4 FragColor;
 in vec2 TexCoords;
 
 uniform sampler2D u_TextureSpecular1;
@@ -45,7 +44,5 @@ uniform sampler2D u_TextureDiffuse1;
 uniform sampler2D u_TextureHeight1;
 
 void main() {
-
     FragColor = texture( u_TextureDiffuse1, TexCoords );
-    //FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
 }

@@ -1,15 +1,15 @@
 #include <memory>
 #include <map>
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
 #include "scenes/Scene.hpp"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "FrameBuffer.h"
-#include "RenderBuffer.h"
-#include "Cubemap.hpp"
+
 #include "Shader.h"
-#include "Texture.h"
+#include "_VertexArray.h"
+#include "_Buffer.h"
+#include "_Texture.h"
 
 namespace Scenes {
 	class SkyboxScene: public Scene {
@@ -140,25 +140,25 @@ namespace Scenes {
 				"res/textures/skybox/back.jpg"
 			};
 
-			m_TextureCube = std::make_unique<Texture>( "res/textures/marble.jpg" );
-			m_TexturePlane = std::make_unique<Texture>( "res/textures/metal.png" );
-			m_Cubemap = std::make_unique<Cubemap>( faces );
+			m_TextureMarble = std::make_unique<_Texture2D>( "res/textures/marble.jpg", _Texture2D::TYPE::DIFFUSE, true );
+			m_TextureMetal = std::make_unique<_Texture2D>( "res/textures/metal.png", _Texture2D::TYPE::DIFFUSE, true );
+			m_Cubemap = std::make_unique<_TextureCubemap>( faces );
 
-			m_VBOSkybox = std::make_unique<VertexBuffer>( skyboxVertices, sizeof( skyboxVertices ) );
+			m_VBOSkybox = std::make_unique<_VertexBuffer>( skyboxVertices, sizeof( skyboxVertices ) );
 			m_VBOSkybox->AddLayoutElement( GL_FLOAT, 3 );
-			m_VAOSkybox = std::make_unique<VertexArray>();
+			m_VAOSkybox = std::make_unique<_VertexArray>();
 			m_VAOSkybox->AddBuffer( *m_VBOSkybox );
 
-			m_VBOCube = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_VBOCube = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 );
-			m_VAOCube = std::make_unique<VertexArray>();
+			m_VAOCube = std::make_unique<_VertexArray>();
 			m_VAOCube->AddBuffer( *m_VBOCube );
 
-			m_VBOPlane = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_VBOPlane = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 3 );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 2 );
-			m_VAOPlane = std::make_unique<VertexArray>();
+			m_VAOPlane = std::make_unique<_VertexArray>();
 			m_VAOPlane->AddBuffer( *m_VBOPlane );
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/EnvironmentMapping.shader" );
@@ -223,21 +223,21 @@ namespace Scenes {
 			glDepthFunc( GL_LESS ); // set depth function back to default
 		}
 	private:
-		std::unique_ptr<VertexArray> m_VAOCube;
-		std::unique_ptr<VertexArray> m_VAOPlane;
-		std::unique_ptr<VertexArray> m_VAOSkybox;
+		std::unique_ptr<_VertexArray> m_VAOCube;
+		std::unique_ptr<_VertexArray> m_VAOPlane;
+		std::unique_ptr<_VertexArray> m_VAOSkybox;
 
-		std::unique_ptr<VertexBuffer> m_VBOCube;
-		std::unique_ptr<VertexBuffer> m_VBOPlane;
-		std::unique_ptr<VertexBuffer> m_VBOSkybox;
+		std::unique_ptr<_VertexBuffer> m_VBOCube;
+		std::unique_ptr<_VertexBuffer> m_VBOPlane;
+		std::unique_ptr<_VertexBuffer> m_VBOSkybox;
 
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Shader> m_ShaderScreen;
 		std::unique_ptr<Shader> m_ShaderSkybox;
 
-		std::unique_ptr<Texture> m_TextureCube;
-		std::unique_ptr<Texture> m_TexturePlane;
-		std::unique_ptr<Cubemap> m_Cubemap;
+		std::unique_ptr<_Texture2D> m_TextureMarble;
+		std::unique_ptr<_Texture2D> m_TextureMetal;
+		std::unique_ptr<_TextureCubemap> m_Cubemap;
 
 		int m_EnvironmentMappingMode;
 	};

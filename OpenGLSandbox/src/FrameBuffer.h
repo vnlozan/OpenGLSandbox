@@ -15,8 +15,9 @@ public:
 	void Unbind() const;
 	
 	void AddColorAttachment( Texture &texture ) const;
+	/* Used for MSAA (Multisampled anti-aliasing) */
+	void AddMultisampledColorAttachment( Texture& texture ) const;
 	void AddDepthStencilAttachment( RenderBuffer &rbo ) const;
-	
 	void AddDepthAttachment() const;
 	void AddStencilAttachment() const;
 

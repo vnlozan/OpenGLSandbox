@@ -31,22 +31,52 @@ Texture::Texture( const char* path, Texture::TYPE type, int params )
 		GLCall( glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR ) );
 		stbi_image_free( m_LocalBuffer );
 	} else {
-		std::cout << "Texture failed to load at path: " << path << std::endl;
+		//std::cout << "Texture failed to load at path: " << path << std::endl;
 		stbi_image_free( m_LocalBuffer );
 	}
 }
 /* Texture without data, used as buffer */
-Texture::Texture( int width, int height )
+Texture::Texture( int width, int height, bool multiSample )
 	: m_RendererId{ 0 }, m_BPP{ 0 }, type{ Texture::TYPE::BUFFER }, m_FilePath{ 0 }, m_LocalBuffer{ nullptr }, m_Height{ height }, m_Width{ width } {
 	glGenTextures( 1, &m_RendererId );
-	glBindTexture( GL_TEXTURE_2D, m_RendererId );
 
+	if( multiSample ) {
+		glBindTexture( GL_TEXTURE_2D_MULTISAMPLE, m_RendererId );
+		glTexImage2DMultisample( GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB, m_Width, m_Height, GL_TRUE );
+		glBindTexture( GL_TEXTURE_2D_MULTISAMPLE, 0 );
+		return;
+	}
+
+	glBindTexture( GL_TEXTURE_2D, m_RendererId );	
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
-
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
 }
+
+
+Texture::Texture( int width, int height, GLenum target, GLenum format, GLenum pixelDataType )
+	: m_RendererId{ 0 }, m_BPP{ 0 }, type{ Texture::TYPE::BUFFER }, m_FilePath{ 0 }, m_LocalBuffer{ nullptr }, m_Height{ height }, m_Width{ width } {
+	
+	glGenTextures( 1, &m_RendererId );
+
+	glBindTexture( target, m_RendererId );
+	switch( target ) {
+		case GL_TEXTURE_2D_MULTISAMPLE :
+			glTexImage2DMultisample( target, 4, format, m_Width, m_Height, GL_TRUE );
+			glBindTexture( target, 0 );
+			return;
+		case GL_TEXTURE_2D :
+			glTexImage2D( target, 0, format, m_Width, m_Height, 0, format, pixelDataType, NULL );
+			glTexParameteri( target, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( target, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			return;
+		default:
+			return;
+	}
+}
+
+
+
 Texture::Texture( const Texture& t )
 	: type{ t.type }, m_FilePath{ t.m_FilePath }, m_RendererId{ t.m_RendererId }, m_Width{ t.m_Width }, m_Height{ t.m_Height }, m_BPP{ t.m_BPP } {
 	//std::cout << "COPY CONSTRUCTOR" << std::endl;

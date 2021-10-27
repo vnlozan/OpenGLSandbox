@@ -15,7 +15,8 @@ public:
 	};
 	
 	Texture( const char* path, Texture::TYPE type = Texture::TYPE::DIFFUSE, int params = GL_REPEAT );
-	Texture( int width, int height );
+	Texture( int width, int height, bool multiSample = false );
+	Texture( int width, int height, GLenum target, GLenum format, GLenum pixelDataType );
 	Texture( const Texture& texture );
 	Texture( Texture&& texture ) noexcept;
 	~Texture();
