@@ -1,15 +1,40 @@
 #pragma once
-
-class VertexBuffer;
+#include "Renderer.h"
+#include "Buffer.h"
 
 class VertexArray {
+public:
+	VertexArray(): m_LastAttribPointer{ 0 } {
+		GLCall( glGenVertexArrays( 1, &m_RendererId ) );
+	}
+	~VertexArray() {
+		GLCall( glDeleteVertexArrays( 1, &m_RendererId ) );
+	}
+
+	void Bind() const {
+		GLCall( glBindVertexArray( m_RendererId ) );
+	}
+	void Unbind() const {
+		GLCall( glBindVertexArray( 0 ) );
+	}
+	
+	void AddBuffer( const VertexBuffer& vb ) {
+		Bind();
+		vb.Bind();
+		unsigned int offset = 0;
+		const auto& elements = vb.GetElements();
+		for( const auto& element : elements ) {
+			GLCall( glEnableVertexAttribArray( m_LastAttribPointer ) );
+			GLCall( glVertexAttribPointer( m_LastAttribPointer, element.count, element.glType, element.normalized, vb.GetStride(), ( void* ) element.offset ) );
+			if( element.isInstanced ) {
+				GLCall( glVertexAttribDivisor( m_LastAttribPointer, element.instanceDivisor ) );
+			}
+			m_LastAttribPointer++;
+		}
+		vb.Unbind();
+		Unbind();
+	}
 private:
 	unsigned int m_RendererId;
 	unsigned int m_LastAttribPointer;
-public:
-	VertexArray();
-	~VertexArray();
-	void Bind() const;
-	void Unbind() const;
-	void AddBuffer( const VertexBuffer& vb );
 };

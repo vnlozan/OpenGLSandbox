@@ -6,9 +6,9 @@
 
 #include "scenes/Scene.hpp"
 
-#include "_VertexArray.h"
-#include "_Texture.h"
-#include "_Buffer.h"
+#include "VertexArray.h"
+#include "Texture.h"
+#include "Buffer.h"
 #include "Shader.h"
 
 namespace Scenes {
@@ -38,10 +38,10 @@ namespace Scenes {
 
 
 			/* Prepare textures */
-			m_TextureWood = std::make_unique<_Texture2D>( "res/textures/wood.png", _Texture2D::TYPE::DIFFUSE, true );
+			m_TextureWood = std::make_unique<Texture2D>( "res/textures/wood.png", Texture2D::TYPE::DIFFUSE, true );
 			
 			float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			m_DepthMap = std::make_unique<_Texture2D>( 1024, 1024, GL_DEPTH_COMPONENT );
+			m_DepthMap = std::make_unique<Texture2D>( 1024, 1024, GL_DEPTH_COMPONENT );
 			m_DepthMap->SetParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			m_DepthMap->SetParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			m_DepthMap->SetParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
@@ -93,8 +93,8 @@ namespace Scenes {
 			   -1.0f, 1.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // top-left
 			   -1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f  // bottom-left        
 			};
-			m_VAOCube = std::make_unique<_VertexArray>();
-			m_VBOCube = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_VAOCube = std::make_unique<VertexArray>();
+			m_VBOCube = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 ); // normals
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
@@ -111,15 +111,15 @@ namespace Scenes {
 				-25.0f, -0.5f, -25.0f,	0.0f, 1.0f, 0.0f,	0.0f, 25.0f,
 				25.0f, -0.5f, -25.0f,	0.0f, 1.0f, 0.0f,	25.0f, 10.0f
 			};
-			m_VAOPlane = std::make_unique<_VertexArray>();
-			m_VBOPlane = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_VAOPlane = std::make_unique<VertexArray>();
+			m_VBOPlane = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 3 ); // normals
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
 			m_VAOPlane->AddBuffer( *m_VBOPlane );
 
 
-			m_FBO = std::make_unique<_FrameBuffer>();
+			m_FBO = std::make_unique<FrameBuffer>();
 			m_FBO->AddDepthAttachment( *m_DepthMap );
 			m_FBO->SetDrawBuffer( GL_NONE );
 			m_FBO->SetReadBuffer( GL_NONE );
@@ -152,25 +152,27 @@ namespace Scenes {
 			glm::mat4 view = m_Camera.GetViewMatrix();
 
 			// 1. render depth of scene to texture (from light's perspective)
-			m_ShaderDepthSimple->Bind();
 
 			renderer.SetViewport( 0, 0, 1024, 1024 );
 			m_FBO->Bind();
 			renderer.Clear( GL_DEPTH_BUFFER_BIT );
 
 			glm::mat4 model = glm::mat4( 1.0f );
+			m_ShaderDepthSimple->Bind();
 			m_ShaderDepthSimple->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOPlane, 6, *m_ShaderDepthSimple, GL_TRIANGLES );
 
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( 0.0f, 1.5f, 0.0 ) );
 			model = glm::scale( model, glm::vec3( 0.5f ) );
+			m_ShaderDepthSimple->Bind();
 			m_ShaderDepthSimple->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderDepthSimple, GL_TRIANGLES );
 
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( 2.0f, 0.0f, 1.0 ) );
 			model = glm::scale( model, glm::vec3( 0.5f ) );
+			m_ShaderDepthSimple->Bind();
 			m_ShaderDepthSimple->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderDepthSimple, GL_TRIANGLES );
 
@@ -178,6 +180,7 @@ namespace Scenes {
 			model = glm::translate( model, glm::vec3( -1.0f, 0.0f, 2.0 ) );
 			model = glm::rotate( model, glm::radians( 60.0f ), glm::normalize( glm::vec3( 1.0, 0.0, 1.0 ) ) );
 			model = glm::scale( model, glm::vec3( 0.25 ) );
+			m_ShaderDepthSimple->Bind();
 			m_ShaderDepthSimple->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderDepthSimple, GL_TRIANGLES );
 
@@ -199,18 +202,21 @@ namespace Scenes {
 			m_DepthMap->Bind();
 
 			model = glm::mat4( 1.0f );
+			m_ShaderBlinnPhongShadow->Bind();
 			m_ShaderBlinnPhongShadow->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOPlane, 6, *m_ShaderBlinnPhongShadow, GL_TRIANGLES );
 
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( 0.0f, 1.5f, 0.0 ) );
 			model = glm::scale( model, glm::vec3( 0.5f ) );
+			m_ShaderBlinnPhongShadow->Bind();
 			m_ShaderBlinnPhongShadow->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderBlinnPhongShadow, GL_TRIANGLES );
 
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( 2.0f, 0.0f, 1.0 ) );
 			model = glm::scale( model, glm::vec3( 0.5f ) );
+			m_ShaderBlinnPhongShadow->Bind();
 			m_ShaderBlinnPhongShadow->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderBlinnPhongShadow, GL_TRIANGLES );
 
@@ -218,6 +224,7 @@ namespace Scenes {
 			model = glm::translate( model, glm::vec3( -1.0f, 0.0f, 2.0 ) );
 			model = glm::rotate( model, glm::radians( 60.0f ), glm::normalize( glm::vec3( 1.0, 0.0, 1.0 ) ) );
 			model = glm::scale( model, glm::vec3( 0.25 ) );
+			m_ShaderBlinnPhongShadow->Bind();
 			m_ShaderBlinnPhongShadow->SetUniformMat4f( "u_Model", model );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderBlinnPhongShadow, GL_TRIANGLES );
 		}
@@ -225,18 +232,18 @@ namespace Scenes {
 		float m_NearPlane;
 		float m_FarPlane;
 
-		std::unique_ptr<_Texture2D> m_DepthMap;
-		std::unique_ptr<_Texture2D> m_TextureWood;
+		std::unique_ptr<Texture2D> m_DepthMap;
+		std::unique_ptr<Texture2D> m_TextureWood;
 	
-		std::unique_ptr<_VertexBuffer> m_VBOPlane;
-		std::unique_ptr<_VertexBuffer> m_VBOCube;
+		std::unique_ptr<VertexBuffer> m_VBOPlane;
+		std::unique_ptr<VertexBuffer> m_VBOCube;
 
-		std::unique_ptr<_VertexArray> m_VAOQuad;
-		std::unique_ptr<_VertexArray> m_VAOCube;
-		std::unique_ptr<_VertexArray> m_VAOPlane;
+		std::unique_ptr<VertexArray> m_VAOQuad;
+		std::unique_ptr<VertexArray> m_VAOCube;
+		std::unique_ptr<VertexArray> m_VAOPlane;
 
-		std::unique_ptr<_RenderBuffer> m_RBO;
-		std::unique_ptr<_FrameBuffer> m_FBO;
+		std::unique_ptr<RenderBuffer> m_RBO;
+		std::unique_ptr<FrameBuffer> m_FBO;
 
 		std::unique_ptr<Shader> m_ShaderDepthSimple;
 		std::unique_ptr<Shader> m_ShaderBlinnPhongShadow;

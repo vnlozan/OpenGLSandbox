@@ -8,9 +8,9 @@
 
 #include "Shader.h"
 
-#include "_VertexArray.h"
-#include "_Texture.h"
-#include "_Buffer.h"
+#include "VertexArray.h"
+#include "Texture.h"
+#include "Buffer.h"
 
 namespace Scenes {
 	class BlinnPhongBasic: public Scene {
@@ -46,14 +46,14 @@ namespace Scenes {
 				10.0f, -0.5f, -10.0f,	0.0f, 1.0f, 0.0f,	10.0f, 10.0f
 			};
 			
-			m_VAO = std::make_unique<_VertexArray>();
-			m_VBO = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_VAO = std::make_unique<VertexArray>();
+			m_VBO = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // normals
 			m_VBO->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
 			m_VAO->AddBuffer( *m_VBO );
 
-			m_TextureWood = std::make_unique<_Texture2D>( "res/textures/wood.png", _Texture2D::TYPE::DIFFUSE, GL_REPEAT );
+			m_TextureWood = std::make_unique<Texture2D>( "res/textures/wood.png", Texture2D::TYPE::DIFFUSE, GL_REPEAT );
 			//m_TextureWood->SetParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 			//m_TextureWood->SetParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 			//m_TextureWood->SetParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
@@ -96,10 +96,10 @@ namespace Scenes {
 			renderer.DrawArrays( *m_VAO, 36, *m_Shader );
 		}
 	private:
-		std::unique_ptr<_Texture2D> m_TextureWood;
+		std::unique_ptr<Texture2D> m_TextureWood;
 
-		std::unique_ptr<_VertexBuffer> m_VBO;
-		std::unique_ptr<_VertexArray> m_VAO;
+		std::unique_ptr<VertexBuffer> m_VBO;
+		std::unique_ptr<VertexArray> m_VAO;
 		
 		std::unique_ptr<Shader> m_Shader;
 		

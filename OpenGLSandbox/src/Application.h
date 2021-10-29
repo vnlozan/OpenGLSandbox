@@ -1,4 +1,4 @@
-#include <iostream>
+#pragma once
 #include "scenes/Scene.hpp"
 #include "scenes/MenuScene.hpp"
 #include "Log.h"
@@ -7,22 +7,29 @@ class Application {
 public:
 	Application( GLuint width, GLuint height, std::string windowTitle )
 		: m_Renderer{}, m_Width{ width }, m_Height{ height }, m_WindowTitle{ windowTitle }, m_CurrentScene{ nullptr }, m_Window{ nullptr } {}
+	
 	Application( const Application& ) = delete;
 	Application( const Application&& ) = delete;
 	~Application() {}
 	
 	template<typename T>
 	void RegisterScene( const char* name ) {
-		//std::cout << "Registering test " << name << std::endl;
-		LOG_WARN( ( std::string )"Registering test " + name );
+
+		LOG_INFO( ( std::string )"Scene:: Registering new scene: " + name );
+
 		m_Scenes.push_back( std::make_pair( name, [&, name] () {
+
 			this->ChangeWindowTitle( m_WindowTitle + " - " + name );
+
+			LOG_INFO( "Scene:: Openging scene: " + (std::string) name );
+
 			T* t = new T( m_Width, m_Height, m_Window );
 			t->OnStart( *m_Renderer );
 			t->SetMenuBackFunction( [this](void) { this->GetBackToMenu(); } );
 			return t;
 		} ) );
 	}
+	
 	int Init() {
 		if( !glfwInit() ) {
 			return -1;
@@ -44,7 +51,7 @@ public:
 
 
 		if( !gladLoadGLLoader( ( GLADloadproc ) glfwGetProcAddress ) ) {
-			std::cout << "Glad Error" << std::endl;
+			LOG_ERROR( "[GLAD] ERROR" );
 			return -1;
 		}
 
@@ -54,6 +61,7 @@ public:
 		/* Resizable window */
 		glfwWindowHint( GLFW_RESIZABLE, GL_TRUE );
 		glfwSetFramebufferSizeCallback( m_Window, [] ( GLFWwindow* window, int width, int height ) {
+			LOG_INFO( "Application:: Changed window width=" + std::to_string( width ) + " and height=" + std::to_string( height ) );
 			glViewport( 0, 0, width, height );
 		} );
 
@@ -126,8 +134,13 @@ private:
 	}
 	void GetBackToMenu() {
 		SetDefaults();
+
+		LOG_INFO( "Main Menu opened."  );
+
 		ChangeWindowTitle( m_WindowTitle );
+		
 		delete m_CurrentScene;
+
 		InitMenu();
 	}
 	void SetDefaults() {
@@ -139,12 +152,13 @@ private:
 		//m_Renderer->EnableFaceCull();
 	}
 public:
-	GLFWwindow* m_Window;
-	GLuint m_Width;
-	GLuint m_Height;
-	std::string m_WindowTitle;
+	GLFWwindow*		m_Window;
+	GLuint			m_Width;
+	GLuint			m_Height;
+	std::string		m_WindowTitle;
 private:
-	Renderer* m_Renderer;
-	std::vector < std::pair<std::string, std::function<Scenes::Scene* ( )>>> m_Scenes;
-	Scenes::Scene* m_CurrentScene;
+	Renderer*		m_Renderer;
+	Scenes::Scene*	m_CurrentScene;
+
+	std::vector<std::pair<std::string, std::function<Scenes::Scene* ( )>>> m_Scenes;
 };

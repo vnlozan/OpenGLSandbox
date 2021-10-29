@@ -8,9 +8,9 @@
 
 #include "Shader.h"
 
-#include "_VertexArray.h"
-#include "_Buffer.h"
-#include "_Texture.h"
+#include "VertexArray.h"
+#include "Buffer.h"
+#include "Texture.h"
 
 namespace Scenes {
 
@@ -97,17 +97,17 @@ namespace Scenes {
 			m_PointLightPositions.emplace_back( glm::vec3( -4.0f, 2.0f, -12.0f ) );
 			m_PointLightPositions.emplace_back( glm::vec3( 0.0f, 0.0f, -3.0f ) );
 
-			m_VAO = std::make_unique<_VertexArray>();
+			m_VAO = std::make_unique<VertexArray>();
 
-			m_VBO = std::make_unique<_VertexBuffer>( vertices, sizeof( vertices ) );
+			m_VBO = std::make_unique<VertexBuffer>( vertices, sizeof( vertices ) );
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // normals
 			m_VBO->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
 
 			m_VAO->AddBuffer( *m_VBO );
 
-			m_TextureDiffuse = std::make_unique<_Texture2D>( "res/textures/container_diffuse.png", _Texture2D::TYPE::DIFFUSE, true );
-			m_TextureSpecular = std::make_unique<_Texture2D>( "res/textures/container_specular.png", _Texture2D::TYPE::SPECULAR, true );
+			m_TextureDiffuse = std::make_unique<Texture2D>( "res/textures/container_diffuse.png", Texture2D::TYPE::DIFFUSE, true );
+			m_TextureSpecular = std::make_unique<Texture2D>( "res/textures/container_specular.png", Texture2D::TYPE::SPECULAR, true );
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/MultipleLight.shader" );
 			m_Shader->Bind();
@@ -115,7 +115,7 @@ namespace Scenes {
 			m_Shader->SetUniform1i( "u_Material.diffuse", 0 );
 			m_Shader->SetUniform1i( "u_Material.specular", 1 );
 
-			m_VAOLight = std::make_unique<_VertexArray>();
+			m_VAOLight = std::make_unique<VertexArray>();
 			m_VAOLight->AddBuffer( *m_VBO );
 
 			m_ShaderLight = std::make_unique<Shader>( "res/shaders/Color.shader" );
@@ -145,13 +145,13 @@ namespace Scenes {
 			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
 			glm::mat4 view = m_Camera.GetViewMatrix();
 
-			m_Shader->Bind();
 
 			m_TextureDiffuse->ActivateTexture( 0 );
 			m_TextureDiffuse->Bind();
 			m_TextureSpecular->ActivateTexture( 1 );
 			m_TextureSpecular->Bind();
 
+			m_Shader->Bind();
 			m_Shader->SetUniform3f( "u_ViewPos", m_Camera.Position );
 			m_Shader->SetUniform1f( "u_Material.shininess", 32.0f );
 			
@@ -194,31 +194,32 @@ namespace Scenes {
 				model = glm::rotate( model, glm::radians( angle ), glm::vec3( 1.0f, 0.3f, 0.5f ) );
 				glm::mat4 mvp = projection * view * model;
 
+				m_Shader->Bind();
 				m_Shader->SetUniformMat4f( "u_Model", model );
 				m_Shader->SetUniformMat4f( "u_MVP", mvp );
 				renderer.DrawArrays( *m_VAO, 36, *m_Shader );
 			}
 
 			// Draw call for all the light sources
-			m_ShaderLight->Bind();
 			for( size_t i = 0; i < m_PointLightPositions.size(); i++ ) {
 				glm::mat4 model = glm::mat4( 1.0f );
 				model = glm::translate( model, m_PointLightPositions[i] );
 				model = glm::scale( model, glm::vec3( 0.2f ) ); // Make it a smaller cube
 				glm::mat4 mvp = projection * view * model; // THE RIGHT WAY pvm
+				m_ShaderLight->Bind();
 				m_ShaderLight->SetUniformMat4f( "u_MVP", mvp );
 				glDrawArrays( GL_TRIANGLES, 0, 36 );
 				renderer.DrawArrays( *m_VAOLight, 36, *m_ShaderLight );
 			}
 		}
 	private:
-		std::unique_ptr<_VertexBuffer> m_VBO;
+		std::unique_ptr<VertexBuffer> m_VBO;
 
-		std::unique_ptr<_VertexArray> m_VAOLight;
-		std::unique_ptr<_VertexArray> m_VAO;
+		std::unique_ptr<VertexArray> m_VAOLight;
+		std::unique_ptr<VertexArray> m_VAO;
 		
-		std::unique_ptr<_Texture2D> m_TextureDiffuse;
-		std::unique_ptr<_Texture2D> m_TextureSpecular;
+		std::unique_ptr<Texture2D> m_TextureDiffuse;
+		std::unique_ptr<Texture2D> m_TextureSpecular;
 
 		std::unique_ptr<Shader> m_ShaderLight;
 		std::unique_ptr<Shader> m_Shader;

@@ -8,9 +8,9 @@
 
 #include "Shader.h"
 
-#include "_VertexArray.h"
-#include "_Buffer.h"
-#include "_Texture.h"
+#include "VertexArray.h"
+#include "Buffer.h"
+#include "Texture.h"
 
 namespace Scenes {
 	class EmissionScene: public Scene {
@@ -77,19 +77,19 @@ namespace Scenes {
 				-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
 			};
 			
-			m_TextureDiffuse = std::make_unique<_Texture2D>( "res/textures/container_diffuse.png", _Texture2D::TYPE::DIFFUSE, true );
-			m_TextureSpecular = std::make_unique<_Texture2D>( "res/textures/container_specular.png", _Texture2D::TYPE::DIFFUSE, true );
-			m_TextureEmissive = std::make_unique<_Texture2D>( "res/textures/container_emission.jpg", _Texture2D::TYPE::DIFFUSE, true );
+			m_TextureDiffuse = std::make_unique<Texture2D>( "res/textures/container_diffuse.png", Texture2D::TYPE::DIFFUSE, true );
+			m_TextureSpecular = std::make_unique<Texture2D>( "res/textures/container_specular.png", Texture2D::TYPE::DIFFUSE, true );
+			m_TextureEmissive = std::make_unique<Texture2D>( "res/textures/container_emission.jpg", Texture2D::TYPE::DIFFUSE, true );
 
-			m_VBO = std::make_unique<_VertexBuffer>( vertices, sizeof( vertices ) );
+			m_VBO = std::make_unique<VertexBuffer>( vertices, sizeof( vertices ) );
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // position
 			m_VBO->AddLayoutElement( GL_FLOAT, 3 ); // normal
 			m_VBO->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
 
-			m_VAO = std::make_unique<_VertexArray>();
+			m_VAO = std::make_unique<VertexArray>();
 			m_VAO->AddBuffer( *m_VBO );
 
-			m_VAOLight = std::make_unique<_VertexArray>();
+			m_VAOLight = std::make_unique<VertexArray>();
 			m_VAOLight->AddBuffer( *m_VBO );
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/Emission.shader" );
@@ -101,7 +101,7 @@ namespace Scenes {
 
 			unsigned int matricesBindingPoint = 0;
 			m_Shader->LinkUniformBlock( "ub_Matrices", matricesBindingPoint );
-			m_UB = std::make_unique <_UniformBuffer>( 2 * sizeof( glm::mat4 ), matricesBindingPoint );
+			m_UB = std::make_unique <UniformBuffer>( 2 * sizeof( glm::mat4 ), matricesBindingPoint );
 			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
 			m_UB->BufferSubData( glm::value_ptr( projection ), sizeof( glm::mat4 ), 0 );
 
@@ -156,20 +156,20 @@ namespace Scenes {
 			renderer.DrawArrays( *m_VAOLight, 36, *m_ShaderLight );
 		}
 	private:
-		std::unique_ptr<_VertexArray> m_VAO;
-		std::unique_ptr<_VertexArray> m_VAOLight;
+		std::unique_ptr<VertexArray> m_VAO;
+		std::unique_ptr<VertexArray> m_VAOLight;
 		
-		std::unique_ptr<_VertexBuffer> m_VBO;
+		std::unique_ptr<VertexBuffer> m_VBO;
 		
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Shader> m_ShaderLight;
 		
-		std::unique_ptr<_Texture2D> m_TextureDiffuse;
-		std::unique_ptr<_Texture2D> m_TextureSpecular;
-		std::unique_ptr<_Texture2D> m_TextureEmissive;
+		std::unique_ptr<Texture2D> m_TextureDiffuse;
+		std::unique_ptr<Texture2D> m_TextureSpecular;
+		std::unique_ptr<Texture2D> m_TextureEmissive;
 
 		glm::vec3 m_LightPos;
 
-		std::unique_ptr<_UniformBuffer> m_UB;
+		std::unique_ptr<UniformBuffer> m_UB;
 	};
 }

@@ -1,15 +1,15 @@
 #pragma once
 #include <vector>
 #include "Renderer.h"
-#include "_Texture.h"
+#include "Texture.h"
 
-class _Buffer {
+class Buffer {
 public:
-	_Buffer(): m_RendererId{ 0 }, m_DeleteOnDestruct{ false } {
+	Buffer(): m_RendererId{ 0 }, m_DeleteOnDestruct{ false } {
 		GLCall( glGenBuffers( 1, &m_RendererId ) );
 	}
 
-	virtual ~_Buffer() {
+	virtual ~Buffer() {
 		//std::cout << "BUFFER DESTRUCTOR" << std::endl;
 		if( m_DeleteOnDestruct ) {
 			GLCall( glDeleteBuffers( 1, &m_RendererId ) );
@@ -29,9 +29,9 @@ protected:
 	unsigned int m_RendererId;
 };
 
-class _IndexBuffer: public _Buffer {
+class IndexBuffer: public Buffer {
 public:
-	_IndexBuffer( const void* data, unsigned int size, unsigned int count ): _Buffer{} {
+	IndexBuffer( const void* data, unsigned int size, unsigned int count ): Buffer{}, m_Count{ count } {
 		ASSERT( sizeof( unsigned int ) == sizeof( GLuint ) );
 		Bind();
 		GLCall( glBufferData( GL_ELEMENT_ARRAY_BUFFER, size, data, GL_STATIC_DRAW ) );
@@ -50,7 +50,7 @@ private:
 	unsigned int m_Count;
 };
 
-class _VertexBuffer: public _Buffer {
+class VertexBuffer: public Buffer {
 public:
 	struct LayoutElement {
 		unsigned int	glType			= GL_FLOAT;	// GL_FLOAT,GL_UNSIGNED_INT
@@ -61,7 +61,7 @@ public:
 		unsigned int	instanceDivisor = 1;
 	};
 	
-	_VertexBuffer( const void* data, unsigned int size ): _Buffer{}, m_Stride{ 0 } {
+	VertexBuffer( const void* data, unsigned int size ): Buffer{}, m_Stride{ 0 } {
 		Bind();
 		GLCall( glBufferData( GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW ) );
 		Unbind();
@@ -90,9 +90,9 @@ private:
 	std::vector<LayoutElement>	m_LayoutElements;
 };
 
-class _UniformBuffer: public _Buffer {
+class UniformBuffer: public Buffer {
 public:
-	_UniformBuffer( unsigned int size, unsigned int bindingPoint ): _Buffer{}, m_Size { size }, m_BindingPoint{ bindingPoint } {
+	UniformBuffer( unsigned int size, unsigned int bindingPoint ): Buffer{}, m_Size { size }, m_BindingPoint{ bindingPoint } {
 		Bind();
 		// Allocate memory
 		GLCall( glBufferData( GL_UNIFORM_BUFFER, size, NULL, GL_STATIC_DRAW ) );
@@ -116,12 +116,12 @@ private:
 	unsigned int m_BindingPoint;
 };
 
-class _RenderBuffer {
+class RenderBuffer {
 public:
-	_RenderBuffer( int width, int height ): m_Height{ height }, m_Width{ width }, m_DeleteOnDestruct{ false } {
+	RenderBuffer( int width, int height ): m_Height{ height }, m_Width{ width }, m_DeleteOnDestruct{ false } {
 		GLCall( glGenRenderbuffers( 1, &m_RendererId ) );
 	}
-	~_RenderBuffer() {
+	~RenderBuffer() {
 		GLCall( glDeleteRenderbuffers( 1, &m_RendererId ) );
 	}
 
@@ -145,9 +145,9 @@ private:
 	int				m_Height;
 };
 
-class _FrameBuffer {
+class FrameBuffer {
 public:
-	_FrameBuffer() {
+	FrameBuffer() {
 		glGenFramebuffers( 1, &m_RendererId );
 	}
 
@@ -158,24 +158,24 @@ public:
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	}
 	
-	void AddDepthAttachment( _Texture& t ) {
+	void AddDepthAttachment( Texture& t ) {
 		Bind();
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, t.GetRendererId(), 0 );
 		Unbind();
 	}
 	void AddStencilAttachment() {}
-	void AddColorAttachment( _Texture& t ) {
+	void AddColorAttachment( Texture& t ) {
 		Bind();
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, t.GetRendererId(), 0 );
 		Unbind();
 	}
 	/* Used for MSAA (Multisampled anti-aliasing) */
-	void AddMultisampledColorAttachment( _Texture& t ) {
+	void AddMultisampledColorAttachment( Texture& t ) {
 		Bind();
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, t.GetRendererId(), 0 );
 		Unbind();
 	}
-	void AddDepthStencilAttachment( _RenderBuffer& rbo ) {
+	void AddDepthStencilAttachment( RenderBuffer& rbo ) {
 		Bind();
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo.GetRendererId() );
 		Unbind();

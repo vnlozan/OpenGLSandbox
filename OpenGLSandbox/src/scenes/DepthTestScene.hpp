@@ -3,7 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "scenes/Scene.hpp"
 #include "VertexArray.h"
-#include "VertexBuffer.h"
+#include "Buffer.h"
 #include "Shader.h"
 #include "Texture.h"
 

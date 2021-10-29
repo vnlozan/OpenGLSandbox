@@ -1,4 +1,4 @@
-#include "Application.hpp"
+#include "Application.h"
 
 #include "Log.h"
 
@@ -26,17 +26,17 @@ int main( void ) {
 	Application app{ 1920, 1080, "OpenGL Sandbox" };
 	
 	app.Init();
-	app.RegisterScene<Scenes::AlphaBlendingScene>( "Demo: Alpha-Blending" );
-	app.RegisterScene<Scenes::BlinnPhongBasic>( "Demo: Blinn-Phong Basic" );
-	app.RegisterScene<Scenes::BlinnPhongShadow>( "Demo: Blinn-Phong Shadow" );
-	app.RegisterScene<Scenes::MultipleLightScene>( "Demo: Blinn-Phong Multiple light" );
-	app.RegisterScene<Scenes::EmissionScene>( "Demo: Emission Directional light" );
-	app.RegisterScene<Scenes::ObjectOutliningScene>( "Demo: Object outlining using stencil testing" );
-	app.RegisterScene<Scenes::DepthTestScene>( "Demo: Color dependent on depth value" );
-	app.RegisterScene<Scenes::PostProcessingScene>( "Demo: Post-processing using frame buffer" );
-	app.RegisterScene<Scenes::SkyboxScene>( "Demo: Skybox and environment mapping" );
-	app.RegisterScene<Scenes::ModelScene>( "Demo: Loading model using ASSIMP" );
-	app.RegisterScene<Scenes::InstancedAsteroids>( "Demo: Instanced rotation asteroids" );
+	app.RegisterScene<Scenes::AlphaBlendingScene>( "Alpha-Blending" );
+	app.RegisterScene<Scenes::BlinnPhongBasic>( "Blinn-Phong Basic" );
+	app.RegisterScene<Scenes::BlinnPhongShadow>( "Blinn-Phong Shadow" );
+	app.RegisterScene<Scenes::MultipleLightScene>( "Blinn-Phong Multiple light" );
+	app.RegisterScene<Scenes::EmissionScene>( "Emission Directional light" );
+	app.RegisterScene<Scenes::ObjectOutliningScene>( "Object outlining using stencil testing" );
+	app.RegisterScene<Scenes::DepthTestScene>( "Color dependent on depth value" );
+	app.RegisterScene<Scenes::PostProcessingScene>( "Post-processing using frame buffer" );
+	app.RegisterScene<Scenes::SkyboxScene>( "Skybox and environment mapping" );
+	app.RegisterScene<Scenes::ModelScene>( "Loading model using ASSIMP" );
+	app.RegisterScene<Scenes::InstancedAsteroids>( "Instanced rotating asteroids" );
 
 	app.PlayLoop();
 

@@ -7,11 +7,9 @@
 void GLClearError();
 bool GLLogCall( const char* function, const char* file, int line );
 
-class _VertexArray;
-class _IndexBuffer;
 class VertexArray;
-class Shader;
 class IndexBuffer;
+class Shader;
 
 class Renderer {
 public:
@@ -36,12 +34,6 @@ public:
 	void SetViewport( GLint x, GLint y, GLsizei width, GLsizei height ) const;
 
 	void DrawElements( const VertexArray& va, const IndexBuffer& ib, const Shader& shader ) const;
-	void DrawElementsInstanced( const VertexArray& va, const IndexBuffer& ib, const Shader& shader, int instancesCount );
 	void DrawArrays( const VertexArray& va, const unsigned int bufferCount, const Shader& shader, unsigned int type = GL_TRIANGLES ) const;
-	void DrawArraysInstanced( const VertexArray& va, const Shader& shader, unsigned int type = GL_TRIANGLES, int first = 0, int count = 0, int instancesCount = 2 ) const;
-
-	//dev
-	void DrawElementsInstanced( const _VertexArray& va, const _IndexBuffer& ib, const Shader& shader, int instancesCount );
-	void DrawElements( const _VertexArray& va, const _IndexBuffer& ib, const Shader& shader ) const;
-	void DrawArrays( const _VertexArray& va, const unsigned int bufferCount, const Shader& shader, unsigned int type = GL_TRIANGLES ) const;
+	void DrawElementsInstanced( const VertexArray& va, const IndexBuffer& ib, const Shader& shader, int instancesCount );
 };

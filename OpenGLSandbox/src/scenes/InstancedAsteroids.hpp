@@ -7,7 +7,7 @@
 #include "scenes/Scene.hpp"
 
 #include "Shader.h"
-#include "_Model.h"
+#include "Model.h"
 
 namespace Scenes {
 	class InstancedAsteroids: public Scene {
@@ -66,7 +66,6 @@ namespace Scenes {
 			m_ModelPlanet = std::make_unique<Model>( "res/models/planet/planet.obj" );
 			m_ModelAsteroid = std::make_unique<Model>( "res/models/rock/rock.obj" );
 
-			//m_ShaderPlanet = std::make_unique<Shader>( "res/shaders/Model.shader" );
 			m_ShaderPlanet = std::make_unique<Shader>( "res/shaders/ModelRotating.shader" );
 			m_ShaderAsteroid = std::make_unique<Shader>( "res/shaders/InstancedRotAsteroids.shader" );
 

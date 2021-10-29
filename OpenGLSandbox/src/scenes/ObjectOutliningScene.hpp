@@ -7,9 +7,9 @@
 
 #include "Shader.h"
 
-#include "_Texture.h"
-#include "_VertexArray.h"
-#include "_Buffer.h"
+#include "Texture.h"
+#include "VertexArray.h"
+#include "Buffer.h"
 
 
 namespace Scenes {
@@ -87,22 +87,22 @@ namespace Scenes {
 				5.0f, -0.5f, -5.0f, 2.0f, 2.0f
 			};
 
-			m_VBOCube = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_VBOCube = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 2 );
 			
-			m_VAOCube = std::make_unique<_VertexArray>();
+			m_VAOCube = std::make_unique<VertexArray>();
 			m_VAOCube->AddBuffer( *m_VBOCube );
 
-			m_VBOPlane = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_VBOPlane = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 3 );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 2 );
 
-			m_VAOPlane = std::make_unique<_VertexArray>();
+			m_VAOPlane = std::make_unique<VertexArray>();
 			m_VAOPlane->AddBuffer( *m_VBOPlane );
 
-			m_TextureMarble = std::make_unique<_Texture2D>( "res/textures/marble.jpg", _Texture2D::TYPE::DIFFUSE, true );
-			m_TextureMetal = std::make_unique<_Texture2D>( "res/textures/metal.png", _Texture2D::TYPE::DIFFUSE, true );
+			m_TextureMarble = std::make_unique<Texture2D>( "res/textures/marble.jpg", Texture2D::TYPE::DIFFUSE, true );
+			m_TextureMetal = std::make_unique<Texture2D>( "res/textures/metal.png", Texture2D::TYPE::DIFFUSE, true );
 
 			m_ShaderTexture = std::make_unique<Shader>( "res/shaders/Texture.shader" );
 			m_ShaderTexture->Bind();
@@ -128,7 +128,6 @@ namespace Scenes {
 			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
 			glm::mat4 view = m_Camera.GetViewMatrix();
 			
-			m_ShaderTexture->Bind();
 			m_TextureMetal->ActivateTexture( 0 );
 			m_TextureMetal->Bind();
 			// draw floor as normal, but don't write the floor to the stencil buffer, we only care about the containers.
@@ -136,6 +135,7 @@ namespace Scenes {
 			renderer.WriteStencilBuffer( false ); // disable writing to the stencil buffer
 			glm::mat4 model = glm::mat4( 1.0f );
 			glm::mat4 mvp = projection * view * model;
+			m_ShaderTexture->Bind();
 			m_ShaderTexture->SetUniformMat4f( "u_MVP", mvp );
 			renderer.DrawArrays( *m_VAOPlane, 36, *m_ShaderTexture );
 
@@ -148,12 +148,14 @@ namespace Scenes {
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( -1.0f, 0.0f, -1.0f ) );
 			mvp = projection * view * model;
+			m_ShaderTexture->Bind();
 			m_ShaderTexture->SetUniformMat4f( "u_MVP", mvp );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderTexture );
 
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( 2.0f, 0.0f, 0.0f ) );
 			mvp = projection * view * model;
+			m_ShaderTexture->Bind();
 			m_ShaderTexture->SetUniformMat4f( "u_MVP", mvp );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderTexture );
 
@@ -178,22 +180,23 @@ namespace Scenes {
 			model = glm::translate( model, glm::vec3( 2.0f, 0.0f, 0.0f ) );
 			model = glm::scale( model, glm::vec3( scale, scale, scale ) );
 			mvp = projection * view * model;
+			m_ShaderColor->Bind();
 			m_ShaderColor->SetUniformMat4f( "u_MVP", mvp );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderColor );
 			renderer.SetStencilFunc( GL_ALWAYS, 0, 0xFF );
 			renderer.EnableDepthTest( true );
 		}
 	private:
-		std::unique_ptr<_VertexArray> m_VAOCube;
-		std::unique_ptr<_VertexArray> m_VAOPlane;
+		std::unique_ptr<VertexArray> m_VAOCube;
+		std::unique_ptr<VertexArray> m_VAOPlane;
 
-		std::unique_ptr<_VertexBuffer> m_VBOCube;
-		std::unique_ptr<_VertexBuffer> m_VBOPlane;
+		std::unique_ptr<VertexBuffer> m_VBOCube;
+		std::unique_ptr<VertexBuffer> m_VBOPlane;
 
 		std::unique_ptr<Shader> m_ShaderTexture;
 		std::unique_ptr<Shader> m_ShaderColor;
 
-		std::unique_ptr<_Texture2D> m_TextureMarble;
-		std::unique_ptr<_Texture2D> m_TextureMetal;
+		std::unique_ptr<Texture2D> m_TextureMarble;
+		std::unique_ptr<Texture2D> m_TextureMetal;
 	};
 }

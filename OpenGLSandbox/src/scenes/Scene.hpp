@@ -122,14 +122,16 @@ namespace Scenes {
 		void SetMenuBackFunction( std::function<void( void )> menuBackFunc ) {
 			this->m_menuBackFunc = menuBackFunc;
 		}
-	protected:
-	private:
+		inline char* getTitle() { return m_Title; }
 	public:
+		char* m_Title;
+	protected:
 		bool m_ControlsEnabled = false;
 
 		float m_LastX;
 		float m_LastY;
 		bool m_FirstMouse;
+
 		Camera m_Camera;
 
 		GLFWwindow* m_Window;
@@ -137,9 +139,10 @@ namespace Scenes {
 		GLuint m_Width;
 		GLuint m_Height;
 
-		std::function<void()> m_menuBackFunc;
 		std::queue<KeyEvent> m_UnhandledKeys;
 		std::map<int, std::function<void()>> m_KeyFunctions;
 		std::map<int, bool> m_Keys;
+	private:
+		std::function<void()> m_menuBackFunc;
 	};
 }

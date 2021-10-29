@@ -1,19 +1,28 @@
 #include <iostream>
-#include "Log.h"
-#include "Renderer.h"
-#include "IndexBuffer.h"
-#include "Shader.h"
-#include "VertexArray.h"
 
-#include "_Buffer.h"
-#include "_VertexArray.h"
+#include "Log.h"
+
+#include "Renderer.h"
+#include "Shader.h"
+#include "Buffer.h"
+#include "VertexArray.h"
 
 void GLClearError() {
 	while ( glGetError() != GL_NO_ERROR );
 }
 bool GLLogCall( const char* function, const char* file, int line ) {
-	while (GLenum error = glGetError()) {
-		std::cout << "[OpenGL Error] " << error << " " << function << " " << file << " : " << line << std::endl;
+	while ( GLenum errorCode = glGetError() ) {
+		std::string error;
+		switch( errorCode ) {
+			case GL_INVALID_ENUM:                  error = "An unacceptable value is specified for an enumerated argument.\r\nThe offending command is ignored and has no other side effect than to set the error flag."; break;
+			case GL_INVALID_VALUE:                 error = "A numeric argument is out of range.\r\nThe offending command is ignored and has no other side effect than to set the error flag."; break;
+			case GL_INVALID_OPERATION:             error = "The specified operation is not allowed in the current state.\r\nThe offending command is ignored and has no other side effect than to set the error flag."; break;
+			case GL_STACK_OVERFLOW:                error = "An attempt has been made to perform an operation that would cause an internal stack to overflow."; break;
+			case GL_STACK_UNDERFLOW:               error = "An attempt has been made to perform an operation that would cause an internal stack to underflow."; break;
+			case GL_OUT_OF_MEMORY:                 error = "There is not enough memory left to execute the command.\r\nThe state of the GL is undefined, except for the state of the error flags, after this error is recorded."; break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION: error = "The framebuffer object is not complete.\r\nThe offending command is ignored and has no other side effect than to set the error flag."; break;
+		}
+		LOG_ERROR( (std::string)"[OpenGL Error] " + error + " " + function + " " + file + " : " + std::to_string( line ) );
 		return false;
 	}
 	return true;
@@ -110,6 +119,14 @@ void Renderer::ClearColor( float r, float g, float b, float alpha ) const {
 	GLCall( glClearColor( 0.0f, 0.0f, 0.0f, 1.0f ) );
 }
 
+void Renderer::DrawArrays( const VertexArray& va, const unsigned int bufferCount, const Shader& shader, unsigned int type ) const {
+	shader.Bind();
+	va.Bind();
+	// TYPE, START_INDEX, INDEX_COUNT from ARRAY
+	GLCall( glDrawArrays( type, 0, bufferCount ) );
+	va.Unbind();
+	shader.Unbind();
+}
 void Renderer::DrawElements( const VertexArray& va, const IndexBuffer& ib, const Shader& shader ) const {
 	shader.Bind();
 	va.Bind();
@@ -120,6 +137,7 @@ void Renderer::DrawElements( const VertexArray& va, const IndexBuffer& ib, const
 	GLCall( glDrawElements( GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr ) );
 	ib.Unbind();
 	va.Unbind();
+	shader.Unbind();
 }
 void Renderer::DrawElementsInstanced( const VertexArray& va, const IndexBuffer& ib, const Shader& shader, int instancesCount ) {
 	shader.Bind();
@@ -128,45 +146,5 @@ void Renderer::DrawElementsInstanced( const VertexArray& va, const IndexBuffer& 
 	glDrawElementsInstanced( GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0, instancesCount );
 	ib.Unbind();
 	va.Unbind();
-}
-void Renderer::DrawArrays( const VertexArray& va, const unsigned int bufferCount, const Shader& shader, unsigned int type ) const {
-	shader.Bind();
-	va.Bind();
-	// TYPE, START_INDEX, INDEX_COUNT from ARRAY
-	GLCall( glDrawArrays( type, 0, bufferCount ) );
-}
-void Renderer::DrawArraysInstanced( const VertexArray& va, const Shader& shader, unsigned int type, int first, int count, int instancesCount ) const {
-	shader.Bind();
-	va.Bind();
-	glDrawArraysInstanced( type, first, count, instancesCount );
-}
-
-
-
-
-//dev
-void Renderer::DrawElementsInstanced( const _VertexArray& va, const _IndexBuffer& ib, const Shader& shader, int instancesCount ) {
-	shader.Bind();
-	va.Bind();
-	ib.Bind();
-	glDrawElementsInstanced( GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, 0, instancesCount );
-	ib.Unbind();
-	va.Unbind();
-}
-void Renderer::DrawElements( const _VertexArray& va, const _IndexBuffer& ib, const Shader& shader ) const {
-	shader.Bind();
-	va.Bind();
-	ib.Bind();
-	// TYPE, ELEMENTS_COUNT, ELEMENTS_COUNT, ELEMENT_TYPE
-	// The last argument allows us to specify an offset in the EBO
-	// (or pass in an index array, but that is when you're not using element buffer objects), but we're just going to leave this at 0.
-	GLCall( glDrawElements( GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr ) );
-	ib.Unbind();
-	va.Unbind();
-}
-void Renderer::DrawArrays( const _VertexArray& va, const unsigned int bufferCount, const Shader& shader, unsigned int type ) const {
-	shader.Bind();
-	va.Bind();
-	// TYPE, START_INDEX, INDEX_COUNT from ARRAY
-	GLCall( glDrawArrays( type, 0, bufferCount ) );
+	shader.Unbind();
 }

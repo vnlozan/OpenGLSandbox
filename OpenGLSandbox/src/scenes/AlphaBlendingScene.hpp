@@ -8,9 +8,9 @@
 
 #include "Shader.h"
 
-#include "_Texture.h"
-#include "_VertexArray.h"
-#include "_Buffer.h"
+#include "Texture.h"
+#include "VertexArray.h"
+#include "Buffer.h"
 
 namespace Scenes {
 	class AlphaBlendingScene: public Scene {
@@ -108,28 +108,28 @@ namespace Scenes {
 			m_TransparentObjectPositions.push_back( glm::vec3( -0.3f, 0.0f, -2.3f ) );
 			m_TransparentObjectPositions.push_back( glm::vec3( 0.5f, 0.0f, -0.6f ) );
 
-			m_TextureMarble = std::make_unique<_Texture2D>( "res/textures/marble.jpg", _Texture2D::TYPE::DIFFUSE, true );
-			m_TextureMetal = std::make_unique<_Texture2D>( "res/textures/metal.png", _Texture2D::TYPE::DIFFUSE, true );
-			m_TextureWindow = std::make_unique<_Texture2D>( "res/textures/window.png", _Texture2D::TYPE::DIFFUSE, GL_CLAMP_TO_BORDER );
-			m_TextureVegetation = std::make_unique<_Texture2D>( "res/textures/grass.png", _Texture2D::TYPE::DIFFUSE, GL_CLAMP_TO_BORDER );
+			m_TextureMarble = std::make_unique<Texture2D>( "res/textures/marble.jpg", Texture2D::TYPE::DIFFUSE, true );
+			m_TextureMetal = std::make_unique<Texture2D>( "res/textures/metal.png", Texture2D::TYPE::DIFFUSE, true );
+			m_TextureWindow = std::make_unique<Texture2D>( "res/textures/window.png", Texture2D::TYPE::DIFFUSE, GL_CLAMP_TO_BORDER );
+			m_TextureVegetation = std::make_unique<Texture2D>( "res/textures/grass.png", Texture2D::TYPE::DIFFUSE, GL_CLAMP_TO_BORDER );
 
 
-			m_VBOCube = std::make_unique<_VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
+			m_VBOCube = std::make_unique<VertexBuffer>( cubeVertices, sizeof( cubeVertices ) );
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOCube->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
-			m_VAOCube = std::make_unique<_VertexArray>();
+			m_VAOCube = std::make_unique<VertexArray>();
 			m_VAOCube->AddBuffer( *m_VBOCube );
 
-			m_VBOPlane = std::make_unique<_VertexBuffer>( planeVertices, sizeof( planeVertices ) );
+			m_VBOPlane = std::make_unique<VertexBuffer>( planeVertices, sizeof( planeVertices ) );
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOPlane->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
-			m_VAOPlane = std::make_unique<_VertexArray>();
+			m_VAOPlane = std::make_unique<VertexArray>();
 			m_VAOPlane->AddBuffer( *m_VBOPlane );
 
-			m_VBOVeget = std::make_unique<_VertexBuffer>( vegetVertices, sizeof( vegetVertices ) );
+			m_VBOVeget = std::make_unique<VertexBuffer>( vegetVertices, sizeof( vegetVertices ) );
 			m_VBOVeget->AddLayoutElement( GL_FLOAT, 3 ); // positions
 			m_VBOVeget->AddLayoutElement( GL_FLOAT, 2 ); // tex coords
-			m_VAOVeget = std::make_unique<_VertexArray>();
+			m_VAOVeget = std::make_unique<VertexArray>();
 			m_VAOVeget->AddBuffer( *m_VBOVeget );
 
 			m_Shader = std::make_unique<Shader>( "res/shaders/Texture.shader" );
@@ -150,12 +150,12 @@ namespace Scenes {
 			glm::mat4 projection = glm::perspective( glm::radians( m_Camera.Zoom ), ( float ) m_Width / ( float ) m_Height, 0.1f, 100.0f );
 			glm::mat4 view = m_Camera.GetViewMatrix();
 
-			m_Shader->Bind();
 
 			m_TextureMetal->ActivateTexture( 0 );
 			m_TextureMetal->Bind();
 			glm::mat4 model = glm::mat4( 1.0f );
 			glm::mat4 mvp = projection * view * model;
+			m_Shader->Bind();
 			m_Shader->SetUniformMat4f( "u_MVP", mvp );
 			renderer.DrawArrays( *m_VAOPlane, 36, *m_Shader );
 
@@ -166,12 +166,14 @@ namespace Scenes {
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( -1.0f, 0.0f, -1.0f ) );
 			mvp = projection * view * model;
+			m_Shader->Bind();
 			m_Shader->SetUniformMat4f( "u_MVP", mvp );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_Shader );
 
 			model = glm::mat4( 1.0f );
 			model = glm::translate( model, glm::vec3( 2.0f, 0.0f, 0.0f ) );
 			mvp = projection * view * model;
+			m_Shader->Bind();
 			m_Shader->SetUniformMat4f( "u_MVP", mvp );
 			renderer.DrawArrays( *m_VAOCube, 36, *m_Shader );
 
@@ -191,6 +193,7 @@ namespace Scenes {
 				mvp = projection * view * model;
 				model = glm::mat4( 1.0f );
 				model = glm::translate( model, it->second );
+				m_Shader->Bind();
 				m_Shader->SetUniformMat4f( "u_MVP", mvp );
 				renderer.DrawArrays( *m_VAOVeget, 36, *m_Shader );
 			}
@@ -205,21 +208,21 @@ namespace Scenes {
 			renderer.DrawArrays( *m_VAOCube, 36, *m_ShaderNormal );
 		}
 	private:
-		std::unique_ptr<_VertexArray> m_VAOCube;
-		std::unique_ptr<_VertexArray> m_VAOPlane;
-		std::unique_ptr<_VertexArray> m_VAOVeget;
+		std::unique_ptr<VertexArray> m_VAOCube;
+		std::unique_ptr<VertexArray> m_VAOPlane;
+		std::unique_ptr<VertexArray> m_VAOVeget;
 
-		std::unique_ptr<_VertexBuffer> m_VBOCube;
-		std::unique_ptr<_VertexBuffer> m_VBOPlane;
-		std::unique_ptr<_VertexBuffer> m_VBOVeget;
+		std::unique_ptr<VertexBuffer> m_VBOCube;
+		std::unique_ptr<VertexBuffer> m_VBOPlane;
+		std::unique_ptr<VertexBuffer> m_VBOVeget;
 
 		std::unique_ptr<Shader> m_Shader;
 		std::unique_ptr<Shader> m_ShaderNormal;
 
-		std::unique_ptr<_Texture2D> m_TextureVegetation;
-		std::unique_ptr<_Texture2D> m_TextureWindow;
-		std::unique_ptr<_Texture2D> m_TextureMarble;
-		std::unique_ptr<_Texture2D> m_TextureMetal;
+		std::unique_ptr<Texture2D> m_TextureVegetation;
+		std::unique_ptr<Texture2D> m_TextureWindow;
+		std::unique_ptr<Texture2D> m_TextureMarble;
+		std::unique_ptr<Texture2D> m_TextureMetal;
 
 		std::vector<glm::vec3> m_TransparentObjectPositions;
 	};
