@@ -96,7 +96,9 @@ public:
 
 				m_CurrentScene->OnUpdate( deltaTime );
 				m_CurrentScene->OnRender( *m_Renderer );
-				m_CurrentScene->OnImGuiRender();
+				if( m_CurrentScene->IsGUIShown() ) {
+					m_CurrentScene->OnImGuiRender();
+				}
 
 				ImGui::Render();
 				ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
@@ -145,11 +147,11 @@ private:
 	}
 	void SetDefaults() {
 		m_Renderer->ClearColor();
-		m_Renderer->SetPolygonMode();
-		m_Renderer->EnableDepthTest();
-		//m_Renderer->EnableStencilTest( true );
-		//m_Renderer->EnableBlend();
-		//m_Renderer->EnableFaceCull();
+		m_Renderer->SetPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+		m_Renderer->EnableDepthTest( true );
+		m_Renderer->EnableStencilTest( false );
+		m_Renderer->EnableBlend( false );
+		m_Renderer->EnableFaceCull( false );
 	}
 public:
 	GLFWwindow*		m_Window;

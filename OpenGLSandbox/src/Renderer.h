@@ -24,8 +24,8 @@ public:
 	void SetStencilOp( GLenum sfail=GL_KEEP, GLenum dpfail=GL_KEEP, GLenum dppass=GL_KEEP ) const;
 	void SetStencilFunc( GLenum func, GLint ref, GLuint mask ) const;
 
-	void EnablePointSize( bool enable = true ) const;
-	void EnableBlend( int srcp=GL_SRC_ALPHA, int dstp=GL_ONE_MINUS_SRC_ALPHA ) const;
+	void EnablePointSize( bool enable=true ) const;
+	void EnableBlend( bool enable=true, int srcp=GL_SRC_ALPHA, int dstp=GL_ONE_MINUS_SRC_ALPHA ) const;
 	void EnableFaceCull( bool enable=true, int cullface=GL_BACK, int ordering=GL_CCW ) const;
 	void ClearColor( float r = 0.0f, float g = 0.0f, float b = 0.0f, float alpha = 1.0f ) const;
 	void Clear() const;

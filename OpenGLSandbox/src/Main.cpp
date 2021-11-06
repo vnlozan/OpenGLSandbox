@@ -13,6 +13,7 @@
 #include "scenes/InstancedAsteroids.hpp"
 #include "scenes/BlinnPhongBasic.hpp"
 #include "scenes/BlinnPhongShadow.hpp"
+#include "scenes/BlinnPhongPointShadow.hpp"
 
 /*
 TODO
@@ -28,7 +29,8 @@ int main( void ) {
 	app.Init();
 	app.RegisterScene<Scenes::AlphaBlendingScene>( "Alpha-Blending" );
 	app.RegisterScene<Scenes::BlinnPhongBasic>( "Blinn-Phong Basic" );
-	app.RegisterScene<Scenes::BlinnPhongShadow>( "Blinn-Phong Shadow" );
+	app.RegisterScene<Scenes::BlinnPhongShadow>( "Blinn-Phong Directional Shadow" );
+	app.RegisterScene<Scenes::BlinnPhongPointShadow>( "Blinn-Phong Point Shadow" );
 	app.RegisterScene<Scenes::MultipleLightScene>( "Blinn-Phong Multiple light" );
 	app.RegisterScene<Scenes::EmissionScene>( "Emission Directional light" );
 	app.RegisterScene<Scenes::ObjectOutliningScene>( "Object outlining using stencil testing" );

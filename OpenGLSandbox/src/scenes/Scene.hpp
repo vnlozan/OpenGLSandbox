@@ -13,6 +13,7 @@
 
 #include "Renderer.h"
 #include "Camera.h"
+#include "Log.h"
 
 namespace Scenes {
 
@@ -28,9 +29,7 @@ namespace Scenes {
 
 	class Scene {
 	public:
-		Scene( GLuint width, GLuint height, GLFWwindow* window )
-			: m_Width{ width }, m_Height{ height }, m_Window{ window }, m_FirstMouse{ true } {
-
+		Scene( GLuint width, GLuint height, GLFWwindow* window ): m_Width{ width }, m_Height{ height }, m_Window{ window } {
 			m_LastX = m_Width / 2.0f;
 			m_LastY = m_Height / 2.0f;
 		}
@@ -64,6 +63,12 @@ namespace Scenes {
 				Scene* scene = ( Scene* ) glfwGetWindowUserPointer( window );
 				scene->m_UnhandledKeys.emplace( key, scancode, action, modes );
 			} );
+			
+			/* Hide GUI when pressed */
+			m_KeyFunctions[GLFW_KEY_ESCAPE] = [this] {
+				m_ShowGUI = !m_ShowGUI;
+				LOG_INFO( "Scene:: [ESC] pressed. " + (std::string)( m_ShowGUI ? "GUI is shown." : "GUI is hidden." ) );
+			};
 		}
 		/* Is called by Application object. All the physics should be here. */
 		virtual void OnUpdate( float deltaTime ) {
@@ -122,22 +127,20 @@ namespace Scenes {
 		void SetMenuBackFunction( std::function<void( void )> menuBackFunc ) {
 			this->m_menuBackFunc = menuBackFunc;
 		}
-		inline char* getTitle() { return m_Title; }
+		inline char* GetTitle() { return m_Title; }
+		inline bool IsGUIShown() { return m_ShowGUI; }
 	public:
-		char* m_Title;
 	protected:
-		bool m_ControlsEnabled = false;
-
-		float m_LastX;
-		float m_LastY;
-		bool m_FirstMouse;
-
-		Camera m_Camera;
-
+		char*		m_Title				= "";
+		bool		m_ShowGUI			= true;
+		bool		m_ControlsEnabled	= false;
+		bool		m_FirstMouse		= true;
+		float		m_LastX;
+		float		m_LastY;
+		Camera		m_Camera;
 		GLFWwindow* m_Window;
-
-		GLuint m_Width;
-		GLuint m_Height;
+		GLuint		m_Width;
+		GLuint		m_Height;
 
 		std::queue<KeyEvent> m_UnhandledKeys;
 		std::map<int, std::function<void()>> m_KeyFunctions;

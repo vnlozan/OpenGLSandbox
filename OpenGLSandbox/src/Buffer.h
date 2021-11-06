@@ -158,9 +158,14 @@ public:
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	}
 	
-	void AddDepthAttachment( Texture& t ) {
+	void Add2DDepthAttachment( Texture2D& t ) {
 		Bind();
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, t.GetRendererId(), 0 );
+		Unbind();
+	}
+	void AddCubeMapDepthAttachment( TextureCubemap& t ) {
+		Bind();
+		glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, t.GetRendererId(), 0 );
 		Unbind();
 	}
 	void AddStencilAttachment() {}

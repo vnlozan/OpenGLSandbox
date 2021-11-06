@@ -91,6 +91,7 @@ private:
     }
     /* Processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any). */
     void processNode( aiNode* node, const aiScene* scene ) {
+        LOG_INFO( node->mName.C_Str() );
         // process each mesh located at the current node
         for( unsigned int i = 0; i < node->mNumMeshes; i++ ) {
             // the node object only contains indices to index the actual objects in the scene. 
@@ -104,6 +105,9 @@ private:
         }
     }
     Mesh processMesh( aiMesh* mesh, const aiScene* scene ) {
+
+        LOG_INFO( mesh->mName.C_Str() );
+
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture2D> textures;
@@ -182,9 +186,9 @@ private:
 public:
     std::vector<Mesh>       m_Meshes;
 private:
-    std::vector<Texture2D>     m_TexturesLoaded;
-    std::string                 m_Directory;
-    bool                        m_GammaCorrection;
+    std::vector<Texture2D>  m_TexturesLoaded;
+    std::string             m_Directory;
+    bool                    m_GammaCorrection;
 
     std::unordered_map<std::string, Texture2D*> m_TLoaded;
 };

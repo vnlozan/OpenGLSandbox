@@ -71,8 +71,23 @@ protected:
 
 class TextureCubemap: public Texture {
 public:
-	TextureCubemap( std::vector<std::string>& texturePaths, bool flipVOnLoad = false )
-		: Texture{ 0, 0 }, m_TexturePaths{ texturePaths } {
+	/* Empty textures cubemap */
+	TextureCubemap( unsigned int width=1024, unsigned int height=1024 ): Texture{ width, height } {
+		Bind();
+
+		for( unsigned int i = 0; i < 6; i++ ) {
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, m_Width, m_Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL );
+		}
+		SetParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		SetParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		SetParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		SetParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+		SetParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+
+		Unbind();
+	}
+
+	TextureCubemap( std::vector<std::string>& texturePaths, bool flipVOnLoad=false ): Texture{ 0, 0 }, m_TexturePaths{ texturePaths } {
 
 		stbi_set_flip_vertically_on_load( flipVOnLoad );
 
@@ -97,12 +112,17 @@ public:
 
 		Unbind();
 	}
+
+
+
+
 	void Bind() const override {
 		GLCall( glBindTexture( GL_TEXTURE_CUBE_MAP, m_RendererId ) );
 	}
 	void Unbind() const override {
 		GLCall( glBindTexture( GL_TEXTURE_CUBE_MAP, 0 ) );
 	}
+
 	void ActivateTexture( unsigned int slot = 0 ) const {
 		GLCall( glActiveTexture( GL_TEXTURE0 + slot ) );
 	}

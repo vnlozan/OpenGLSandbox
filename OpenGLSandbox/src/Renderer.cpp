@@ -1,8 +1,6 @@
-#include <iostream>
+#include "Renderer.h"
 
 #include "Log.h"
-
-#include "Renderer.h"
 #include "Shader.h"
 #include "Buffer.h"
 #include "VertexArray.h"
@@ -22,7 +20,7 @@ bool GLLogCall( const char* function, const char* file, int line ) {
 			case GL_OUT_OF_MEMORY:                 error = "There is not enough memory left to execute the command.\r\nThe state of the GL is undefined, except for the state of the error flags, after this error is recorded."; break;
 			case GL_INVALID_FRAMEBUFFER_OPERATION: error = "The framebuffer object is not complete.\r\nThe offending command is ignored and has no other side effect than to set the error flag."; break;
 		}
-		LOG_ERROR( (std::string)"[OpenGL Error] " + error + " " + function + " " + file + " : " + std::to_string( line ) );
+		LOG_ERROR( (std::string)"Renderer:: " + error + " " + function + " " + file + " : " + std::to_string( line ) );
 		return false;
 	}
 	return true;
@@ -67,7 +65,11 @@ void Renderer::EnablePointSize( bool enable ) const {
 	}
 	GLCall( glEnable( GL_PROGRAM_POINT_SIZE ) );
 }
-void Renderer::EnableBlend( int srcp, int dstp ) const {
+void Renderer::EnableBlend( bool enable, int srcp, int dstp ) const {
+	if( !enable ) {
+		GLCall( glDisable( GL_BLEND ) );
+		return;
+	}
 	GLCall( glEnable( GL_BLEND ) );
 	GLCall( glBlendFunc( srcp, dstp ) );
 	GLCall( glBlendEquation( GL_FUNC_ADD ) );

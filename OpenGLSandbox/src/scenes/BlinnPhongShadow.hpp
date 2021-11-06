@@ -120,7 +120,7 @@ namespace Scenes {
 
 
 			m_FBO = std::make_unique<FrameBuffer>();
-			m_FBO->AddDepthAttachment( *m_DepthMap );
+			m_FBO->Add2DDepthAttachment( *m_DepthMap );
 			m_FBO->SetDrawBuffer( GL_NONE );
 			m_FBO->SetReadBuffer( GL_NONE );
 			m_FBO->Unbind();
@@ -129,7 +129,7 @@ namespace Scenes {
 			glm::mat4 lightProjection = glm::ortho( -10.0f, 10.0f, -10.0f, 10.0f, m_NearPlane, m_FarPlane );
 			glm::mat4 lightView = glm::lookAt( m_LightPos, glm::vec3( 0.0f ), glm::vec3( 0.0, 1.0, 0.0 ) );
 			glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-			m_ShaderDepthSimple = std::make_unique<Shader>( "res/shaders/DepthSimple.shader" );
+			m_ShaderDepthSimple = std::make_unique<Shader>( "res/shaders/DepthDirectionShadows.shader" );
 			m_ShaderDepthSimple->Bind();
 			m_ShaderDepthSimple->SetUniformMat4f( "u_LightSpaceMatrix", lightSpaceMatrix );
 
@@ -238,7 +238,6 @@ namespace Scenes {
 		std::unique_ptr<VertexBuffer> m_VBOPlane;
 		std::unique_ptr<VertexBuffer> m_VBOCube;
 
-		std::unique_ptr<VertexArray> m_VAOQuad;
 		std::unique_ptr<VertexArray> m_VAOCube;
 		std::unique_ptr<VertexArray> m_VAOPlane;
 

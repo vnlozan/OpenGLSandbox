@@ -69,12 +69,12 @@ namespace Scenes {
 			m_ShaderPlanet = std::make_unique<Shader>( "res/shaders/ModelRotating.shader" );
 			m_ShaderAsteroid = std::make_unique<Shader>( "res/shaders/InstancedRotAsteroids.shader" );
 
-
+			// 4x4 matrix
 			m_VBO = std::make_unique<VertexBuffer>( m_ModelMatrices, m_AsteroidsAmount * sizeof( m_ModelMatrices ) );
-			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 );
-			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 );
-			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 );
-			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 );
+			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 ); // 5
+			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 ); // 6
+			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 ); // 7
+			m_VBO->AddLayoutElement( GL_FLOAT, 4, GL_FALSE, true, 1 ); // 8
 
 			for( Mesh& mesh : m_ModelAsteroid->m_Meshes ) {
 				mesh.AddVBO( *m_VBO );
